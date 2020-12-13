@@ -16,25 +16,22 @@ import es.um.mned.tools.*;
  *
  * @author paco
  */
-public class TwoBodyProblem implements InitialValueProblem {
-    static private double sG = 8.6498928e-4;
+public class TwoBodyProblem extends InitialValueProblem {
+
+	private static double[] initState = new double[] { 152.100533, 0.0 , 0.0, 0.105444 }; // x,vx,y,vy
+
+	static private double sG = 8.6498928e-4;
 
     private double mM1 = 1988.5, mM2 = 0.0059724;
-    private double[] initState = new double[] { 152.100533, 0.0 , 0.0, 0.105444 }; // x,vx,y,vy
-    
     private double mConstant = sG * (mM1 + mM2);
     
     // ------------------
     // Implementation of InitialValueProblem
     // ------------------
 
-    public double getInitialTime() { 
-        return 0; 
-    }
-    
-    public double[] getInitialState() { // x,vx, y,vy 
-        return Arrays.copyOf(initState, initState.length);
-    } 
+    public TwoBodyProblem(double t0, double[] x0) {
+		super(t0, x0);
+	}
     
     public double[] getDerivative(double t, double[] x) {
         double div  = Math.pow(x[0]*x[0]+x[2]*x[2],1.5);
@@ -67,7 +64,7 @@ public class TwoBodyProblem implements InitialValueProblem {
         double hStep = 10;
         double tolerance = 1.0e-8;
 
-        InitialValueProblem problem = new TwoBodyProblem();
+        InitialValueProblem problem = new TwoBodyProblem(0., Arrays.copyOf(initState, initState.length));
         FixedStepMethod method = new FixedStepModifiedEulerMethod(problem,10);
         method = new FixedStepPredictorCorrector4Method(problem,10);
         method = new AdaptiveStepPredictorCorrector4Method(problem,hStep, tolerance);

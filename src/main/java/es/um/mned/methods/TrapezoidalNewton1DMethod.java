@@ -1,6 +1,6 @@
 package es.um.mned.methods;
 
-import es.um.mned.interpolation.ExtendedFunction1D;
+import es.um.mned.auxiliar.ExtendedFunction1D;
 import es.um.mned.ode.ExtendedInitialValueProblem;
 import es.um.mned.tools.Newton1D;
 

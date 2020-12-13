@@ -12,19 +12,15 @@ import es.um.mned.ode.*;
  *
  * @author paco
  */
-public class Rigid1D implements ExtendedInitialValueProblem {
+public class Rigid1D extends ExtendedInitialValueProblem {
 
     // ------------------
     // Implementation of ExtendedInitialValueProblem
     // ------------------
 
-    public double getInitialTime() { 
-        return 0; 
-    }
-    
-    public double[] getInitialState() { // x,vx, y,vy 
-        return new double[] { -1.0 };
-    } 
+    public Rigid1D(double t0, double[] x0) {
+		super(t0, x0);
+	}
     
     public double[] getDerivative(double t, double[] x) {
         return new double[] { 

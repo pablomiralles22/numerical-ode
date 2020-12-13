@@ -1,6 +1,6 @@
 package es.um.mned.tools;
 
-import es.um.mned.interpolation.ExtendedFunction1D;
+import es.um.mned.auxiliar.ExtendedFunction1D;
 
 public class Newton1D {
 	

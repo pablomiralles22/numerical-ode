@@ -15,7 +15,7 @@ import es.um.mned.tools.*;
  *
  * @author paco
  */
-public class ParabolicThrowWithFriction implements InitialValueProblem {
+public class ParabolicThrowWithFriction extends InitialValueProblem {
     static private double mGravity = 9.8;
 
     private final double mFrictionCoefficient;
@@ -23,7 +23,8 @@ public class ParabolicThrowWithFriction implements InitialValueProblem {
     
     private final double constant;
     
-    public ParabolicThrowWithFriction(double coefficient) {
+    public ParabolicThrowWithFriction(double t0, double[] x0, double coefficient) {
+    	super(t0, x0);
         mFrictionCoefficient = coefficient;
         constant = mFrictionCoefficient/mMass;
     }
@@ -71,7 +72,7 @@ public class ParabolicThrowWithFriction implements InitialValueProblem {
     }
     
     public static void main(String[] args) {
-        InitialValueProblem problem = new ParabolicThrowWithFriction(0.0);
+        InitialValueProblem problem = new ParabolicThrowWithFriction(0., new double[] { 0, 100, 300, 0 }, 0.);
         FixedStepMethod method = new FixedStepEulerMethod(problem,1.0e-2);
         
         NumericalSolutionPoint previousPoint, currentPoint;

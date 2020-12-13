@@ -15,7 +15,7 @@ import es.um.mned.tools.*;
  *
  * @author paco
  */
-public class SimpleHarmonicOscillator implements InitialValueProblem {
+public class SimpleHarmonicOscillator extends InitialValueProblem {
     static private double l = 0.7;
     static private double m = 1.0;
     static private double k = 1.5;
@@ -29,7 +29,9 @@ public class SimpleHarmonicOscillator implements InitialValueProblem {
 
     private long mEvaluations = 0L;
     
-    public SimpleHarmonicOscillator() { }
+    public SimpleHarmonicOscillator(double t0, double[] x0) {
+    	super(t0, x0);
+    }
     
     private double force(double time) {
         return amp*Math.sin(freq*time);
@@ -38,13 +40,6 @@ public class SimpleHarmonicOscillator implements InitialValueProblem {
     // Implementation of InitialValueProblem
     // ------------------
 
-    public double getInitialTime() { 
-        return 0; 
-    }
-    
-    public double[] getInitialState() { // x (m),vx (m/s)
-        return new double[] { Xo, Vo };
-    } 
     
     public double[] getDerivative(double t, double[] x) {
         mEvaluations++;
@@ -87,7 +82,7 @@ public class SimpleHarmonicOscillator implements InitialValueProblem {
 
     
     public static void main(String[] args) {
-        SimpleHarmonicOscillator shoProblem = new SimpleHarmonicOscillator();
+        SimpleHarmonicOscillator shoProblem = new SimpleHarmonicOscillator(0., new double[] {Xo, Vo});
         //FixedStepMethod method = new FixedStepEulerMethod(shoProblem,1.0e-4);
 
         double maxTime = 40;

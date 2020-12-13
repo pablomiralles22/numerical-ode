@@ -10,7 +10,7 @@ public class ImplicitMethodsRigid1D {
 	public static void main(String[] args) {
 		double maxTime = 8;
 		double tolerance = 1e-10;
-        ExtendedInitialValueProblem problem = new Rigid1D();
+        ExtendedInitialValueProblem problem = new Rigid1D(0., new double[] {-1});
 
         double hStep = 1e-5;
         FixedStepMethod method = new BackwardsEulerNewton1DMethod(problem,hStep, tolerance);

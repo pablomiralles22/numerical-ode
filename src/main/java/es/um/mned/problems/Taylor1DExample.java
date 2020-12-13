@@ -17,10 +17,15 @@ import es.um.mned.tools.DisplaySolution;
  */
 
 
-public class Taylor1DExample implements InitialValueProblem {
+public class Taylor1DExample extends InitialValueProblem {
 
-    static private double sTo = 0;
+
+	static private double sTo = 0;
     static private double sYo = 0.5;
+    
+    public Taylor1DExample(double t0, double[] x0) {
+		super(t0, x0);
+	}
 
     static public class Taylor1DExample2ndOrderSolver extends FixedStepMethod {
 
@@ -46,7 +51,7 @@ public class Taylor1DExample implements InitialValueProblem {
         public double doStep(double h, double t, double[] state) {
             double wi = state[0];
             state[0] = wi +  h * ( (1 + h/2. + h*h/6. + h*h*h/24.) * (wi-t*t) - h*t * (1 + h/3. + h*h/24.) 
-                                 + (1 + h/2.-h*h/6. - h*h*h/24.)) ;
+                                 + (1 + h/2. - h*h/6. - h*h*h/24.)) ;
             return t + h;
         }
     }
@@ -89,7 +94,7 @@ public class Taylor1DExample implements InitialValueProblem {
         double maxTime = 2;
         double h = 0.1;
         
-        Taylor1DExample problem = new Taylor1DExample();
+        Taylor1DExample problem = new Taylor1DExample(sTo, new double[] {sYo});
         TrueSol sol = new TrueSol();
 
         FixedStepMethod taylor2Method = new Taylor1DExample2ndOrderSolver(problem,h);

@@ -16,24 +16,11 @@ import es.um.mned.tools.*;
  * https://www.johndcook.com/blog/2020/02/08/arenstorf-orbit/
  * @author paco
  */
-public class ArenstorfOrbits implements InitialValueProblem {
-    static private double sMu = 0.012277471;
+public class ArenstorfOrbits extends InitialValueProblem {
+
+	static private double sMu = 0.012277471;
     static private double sMuPrime = 1-sMu;
     static private double sPeriod = 17.0652165601579625588917206249;
-
-    private double[] initState = new double[] { 0.994, 0.0 , 0.0, -2.00158510637908252240537862224 }; // x,vx,y,vy
-        
-    // ------------------
-    // Implementation of InitialValueProblem
-    // ------------------
-
-    public double getInitialTime() { 
-        return 0; 
-    }
-    
-    public double[] getInitialState() { // x,vx, y,vy 
-        return Arrays.copyOf(initState, initState.length);
-    } 
     
     public double[] getDerivative(double t, double[] x) {
         double D1 = Math.pow((x[0]+sMu)*(x[0]+sMu) + x[2]*x[2],1.5);
@@ -45,6 +32,10 @@ public class ArenstorfOrbits implements InitialValueProblem {
             x[2] - 2*x[1] - sMuPrime*x[2]/D1 - sMu*x[2]/D2,
         };
     }
+    
+    public ArenstorfOrbits(double t0, double[] x0) {
+		super(t0, x0);
+	}
 
     // ------------------
     // End of implementation of InitialValueProblem
@@ -70,7 +61,10 @@ public class ArenstorfOrbits implements InitialValueProblem {
     public static void main(String[] args) {
         double hStep = 1.0e-2;
         double tolerance = 1.0e-8;
-        InitialValueProblem problem = new ArenstorfOrbits();
+        InitialValueProblem problem = new ArenstorfOrbits(
+        		0.,
+        		new double[] { 0.994, 0.0 , 0.0, -2.00158510637908252240537862224 }
+        		);
         FixedStepMethod method = new FixedStepPredictorCorrector4Method(problem,hStep);
         method = new AdaptiveStepPredictorCorrector4Method(problem,hStep, tolerance);
         method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance);

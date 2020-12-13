@@ -1,4 +1,4 @@
-package es.um.mned.interpolation;
+package es.um.mned.auxiliar;
 
 public interface ExtendedFunction1D extends Function1D {
 	
