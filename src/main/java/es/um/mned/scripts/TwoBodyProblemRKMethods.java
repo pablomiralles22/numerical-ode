@@ -39,7 +39,7 @@ public class TwoBodyProblemRKMethods {
         return zeroAt;
     }
 	
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         double hStep = 10;
         double tolerance = 1.0e-8;
 
@@ -63,6 +63,7 @@ public class TwoBodyProblemRKMethods {
                 String label = currentPoint.getState(3)>0 ? "Aphelium  " : "Perihelium";
                 
                 double yearTime = computeCrossing(label,problem, method, previousPoint, currentPoint, 1.0e-6, 2);
+                System.out.println("Printing x-axis in year time:" + method.getSolution().getState(yearTime, 0));
                 // Crossed axis
                 if (currentPoint.getState(3)>0) {
                     double currentYearHours = yearTime-lastYearStart;

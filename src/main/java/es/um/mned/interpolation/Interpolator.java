@@ -23,8 +23,9 @@ public class Interpolator implements StateFunction {
     public Interpolator(Map<Double, double[][]> m) {
         dim = m.values().iterator().next()[0].length;
         n = 0;
-        for(double[][] al : m.values())
+        for(double[][] al : m.values()) {
             n += al.length;
+        }
 
         r = new double[n];
         {
@@ -54,14 +55,9 @@ public class Interpolator implements StateFunction {
                         dd[i][j][h] = (dd[i-1][j][h]-dd[i-1][j-1][h]) / (r[j]-r[j-i]);
             }
         }
-        for(int i=0; i<n; ++i) {
-        	for(int j=0; j<n; ++j)
-				System.out.print(dd[i][j][0] + "\t");
-        	System.out.println();
-        }
-        
+
         for(int i=0; i<n; ++i)
-            coeffs[i] = Arrays.copyOf(dd[i][i], dd[i][i].length);
+            coeffs[i] = Arrays.copyOf(dd[i][i], dim);
 
     }
 
@@ -90,14 +86,15 @@ public class Interpolator implements StateFunction {
     public static void main(String[] args) {
     	double[][] l1, l2, l3;
     	l1 = new double[][] {new double[] {2}, new double[] {-8}, new double[] {56}};
-    	l2 = new double[][] {new double[] {1}, new double[] {0}, new double[] {0}};
-    	l3 = new double[][] {new double[] {2}, new double[] {8}, new double[] {56}};
+    	l2 = new double[][] {new double[] {1}};
+    	l3 = new double[][] {new double[] {2}, new double[] {8}};
     	HashMap<Double, double[][]> hm = new HashMap<>();
     	hm.put(-1., l1);
     	hm.put(0., l2);
     	hm.put(1., l3);
     	Interpolator inter = new Interpolator(hm);
     	System.out.println(inter.getState(3, 0));
+    	System.out.println(inter.n);
     }
 
 }
