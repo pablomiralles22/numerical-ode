@@ -25,6 +25,11 @@ public class FixedStepRungeKutta4Method extends FixedStepMethod {
         super(problem,step);
         auxState = problem.getInitialState();
     }
+    
+    @Override
+    public int getOrder() {
+    	return 4;
+    }
 
     /**
      * Euler method implementation
@@ -34,7 +39,6 @@ public class FixedStepRungeKutta4Method extends FixedStepMethod {
      * @return the value of time of the step taken, state will contain the updated state
      */
     public double doStep(double deltaTime, double time, double[] state) {
-        super.addToEvaluationCounter(4);
         double h2 = deltaTime/2.0;
         double[] k1 = mProblem.getDerivative(time, state);
         for (int i=0; i<state.length; i++) {

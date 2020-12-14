@@ -7,7 +7,10 @@ package es.um.mned.ode;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.HashMap;
 
+import es.um.mned.interpolation.HermiteInterpolator;
 import es.um.mned.interpolation.StateFunction;
 
 /**
@@ -18,25 +21,31 @@ import es.um.mned.interpolation.StateFunction;
  * @version September 2020
  */
 public class NumericalSolution {
-    private ArrayList<NumericalSolutionPoint> mPointList;
+	private InitialValueProblem ivp;
+    private ArrayList<NumericalSolutionPoint> pointList;
+    private HashMap<Integer, StateFunction> interpolators;
+    private int order;
    
-    /**
-     * Creates an empty NumericalSolution
-     * @param problem the InitialValueProblem being solved
-     */
-    public NumericalSolution() {
-        mPointList = new ArrayList<>();
-    }
+//    /**
+//     * Creates an empty NumericalSolution
+//     * @param problem the InitialValueProblem being solved
+//     */
+//    public NumericalSolution() {
+//        mPointList = new ArrayList<>();
+//    }
     /**
      * Creates a NumericalSolution with the initial condition as first point
      * @param problem the InitialValueProblem being solved
      */
-    public NumericalSolution(InitialValueProblem problem) {
-        mPointList = new ArrayList<>();
-        mPointList.add(new NumericalSolutionPoint(problem.getInitialTime(),problem.getInitialState()));        
+    public NumericalSolution(InitialValueProblem problem, int order) {
+    	ivp = problem;
+    	interpolators = new HashMap<>();
+        pointList = new ArrayList<>();
+        pointList.add(new NumericalSolutionPoint(problem.getInitialTime(),problem.getInitialState()));
+        this.order = order;
     }
-    
-    /**
+
+	/**
      * Adds a solution point
      * 
      * @param time the time of the point to add: t
@@ -45,48 +54,25 @@ public class NumericalSolution {
      */
     public NumericalSolutionPoint add(double time, double[] state) {
         NumericalSolutionPoint point = new NumericalSolutionPoint(time,state);
-        if (mPointList.add(point)) return point;
+        if (pointList.add(point)) return point;
         return null;
     }
 
-    /**
-     * Gets the time of the first point in the solution
-     * @return 
-     */
-    public double getInitialTime() { return getFirstPoint().getTime(); }
-    
-    /**
-     * Gets the time of the last point of the solution
-     * @return 
-     */
-    public double getLastTime() { return getLastPoint().getTime(); }
-
-    /**
-     * Gets the first point in the solution
-     * @return 
-     */
-    public NumericalSolutionPoint getFirstPoint() { 
-        return mPointList.get(0);
+    public NumericalSolutionPoint get(int index) {
+    	return pointList.get(index);
     }
-    
     /**
      * Gets the last point of the solution
      * @return 
      */
     public NumericalSolutionPoint getLastPoint() { 
-        return mPointList.get(mPointList.size()-1);
-    }
-    
-    public double getFirstStep() {
-        if (mPointList.size()<=1) return Double.NaN;
-        NumericalSolutionPoint secondPoint = mPointList.get(1);
-        return secondPoint.getTime()-getInitialTime();
+        return pointList.get(pointList.size()-1);
     }
     
     public void removeLast(int howMany) {
-        int size = mPointList.size();
+        int size = pointList.size();
         howMany = Math.min(howMany, size);
-        for (int i=0,last=size-1; i<howMany; i++,last--) mPointList.remove(last);
+        for (int i=0,last=size-1; i<howMany; i++,last--) pointList.remove(last);
     }
     
     /**
@@ -94,7 +80,7 @@ public class NumericalSolution {
      * @return 
      */
     public Iterator<NumericalSolutionPoint> iterator() {
-        return mPointList.iterator();
+        return pointList.iterator();
     }
     
     /**
@@ -103,13 +89,16 @@ public class NumericalSolution {
      * @return 
      */
     public Iterator<NumericalSolutionPoint> iterator(int numberOfPoints) {
-        int size = mPointList.size();
-        return mPointList.subList(size-numberOfPoints, size).iterator();
+        int size = pointList.size();
+        return pointList.subList(size-numberOfPoints, size).iterator();
     }
     
+    /*
+     * Returns max error given analytical solution
+     */
     public double getMaxError(StateFunction analyticalSolution) {
     	double err = 0.0;
-    	for(NumericalSolutionPoint p : mPointList) {
+    	for(NumericalSolutionPoint p : pointList) {
     		double currentErr = 0.0;
     		for(int i=0; i < p.getState().length; ++i) {
     			double diff = (p.getState(i) - analyticalSolution.getState(p.getTime(), i));
@@ -119,5 +108,60 @@ public class NumericalSolution {
     	}
     	return Math.sqrt(err);
     }
+    
+    public ArrayList<Double> getStepList() {
+    	ArrayList<Double> stepList = new ArrayList<>(pointList.size()-1);
+    	for(int i=0; i+1 < pointList.size(); ++i)
+    		stepList.set(i, pointList.get(i+1).getTime() - pointList.get(i).getTime());
+    	return stepList;
+    }
+    
+    private void putInterpolator(int index) {
+        // in case we don't have enough points. The worst case scenerio
+        // in this library is having 1 interpolator with worse precision
+        // in the very first interval, and only in methods with order>=4
+    	int nPoints = Math.max((order+2)/2, pointList.size());
+        int start;
+        if(index - (nPoints+1)/2 < 0) 
+            start = 0;
+        else if(index + nPoints/2 >= pointList.size())
+            start = pointList.size() - nPoints;
+        else
+            start = index - (nPoints+1)/2;
+        
+        HashMap<Double, double[][]> m = new HashMap<>();
+        for(int i=start; i<start+nPoints; ++i) {
+            NumericalSolutionPoint p = pointList.get(i);
+            double time = p.getTime();
+            double[] state = p.getState();
+            m.put(time, new double[][] {state, ivp.getDerivative(time,state)});
+        }
+        interpolators.put(index, new Interpolator(m));
+    }
+    
+    public double[] getState(double t) throws Exception {
+    	if(!pointList.isEmpty() && t >= pointList.get(0).getTime())
+	    	for(int i=1; i<pointList.size(); ++i) {
+	    		if(pointList.get(i).getTime() >= t) {
+	    			if(!interpolators.containsKey(i))
+                        putInterpolator(i);
+	    			return interpolators.get(i).getState(t);
+	    		}
+	    	}
+    	throw new Exception("Evaluation out of bounds.");
+    }
+//    
+//    public double getState(double t, int index) throws Exception {
+//    	if(!mPointList.isEmpty() && t >= mPointList.get(0).getTime())
+//	    	for(int i=1; i<mPointList.size(); ++i) {
+//	    		if(mPointList.get(i).getTime() >= t) {
+//	    			if(!interpolators.containsKey(i))
+//	    				interpolators.put(i, 
+//	    						new HermiteInterpolator(ivp, mPointList.get(i-1), mPointList.get(i)));
+//	    			return interpolators.get(i).getState(t, index);
+//	    		}
+//	    	}
+//    	throw new Exception("Evaluation out of bounds.");
+//    }
     
 }

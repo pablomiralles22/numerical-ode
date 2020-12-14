@@ -23,6 +23,7 @@ public class Rigid1D extends ExtendedInitialValueProblem {
 	}
     
     public double[] getDerivative(double t, double[] x) {
+    	super.addToEvaluationCounter();
         return new double[] { 
         	5 * Math.exp(5*t) * (x[0]-t) * (x[0]-t) + 1
         };

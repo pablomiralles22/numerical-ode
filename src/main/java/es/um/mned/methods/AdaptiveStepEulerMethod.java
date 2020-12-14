@@ -5,7 +5,6 @@
  */
 package es.um.mned.methods;
 
-import es.um.mned.methods.AdaptiveStepMethod;
 import es.um.mned.ode.InitialValueProblem;
 
 /**
@@ -33,6 +32,12 @@ public class AdaptiveStepEulerMethod extends AdaptiveStepMethod {
         mFullStepState = problem.getInitialState();
         mMinimumStepAllowed = step/1.0e6;
     }
+    
+    
+    @Override
+    public int getOrder() {
+    	return 1;
+    }
 
     /**
      * Extrapolated Euler method implementation
@@ -44,7 +49,6 @@ public class AdaptiveStepEulerMethod extends AdaptiveStepMethod {
     public double doStep(double deltaTime, double time, double[] state) {
         while (mCurrentStep>=mMinimumStepAllowed) {
             double[] derivative = mProblem.getDerivative(time, state);
-            super.addToEvaluationCounter(2);
             double halfStep = mCurrentStep/2;
             for (int i=0; i<state.length; i++) {
                 mHalfStepState[i] = state[i] + halfStep     * derivative[i];

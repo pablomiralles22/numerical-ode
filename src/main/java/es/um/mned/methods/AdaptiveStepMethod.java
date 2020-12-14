@@ -5,7 +5,6 @@
  */
 package es.um.mned.methods;
 
-import java.util.ArrayList;
 import es.um.mned.ode.InitialValueProblem;
 
 /**
@@ -17,7 +16,7 @@ import es.um.mned.ode.InitialValueProblem;
 abstract public class AdaptiveStepMethod extends FixedStepMethod {
  
     protected double mTolerance = 1.0e-4;
-    protected ArrayList<Double> mStepList = new ArrayList<Double>();
+    // protected ArrayList<Double> mStepList = new ArrayList<Double>();
 
     public AdaptiveStepMethod(InitialValueProblem problem, double step) {
         super(problem,step);
@@ -29,10 +28,6 @@ abstract public class AdaptiveStepMethod extends FixedStepMethod {
 
     public double getTolerance() {
         return mTolerance;
-    }
-    
-    public ArrayList<Double> getStepList() {
-        return mStepList;
     }
     
 }

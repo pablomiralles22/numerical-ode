@@ -28,7 +28,6 @@ public class FixedStepPredictorCorrector4Method extends FixedStepAdamsBashford4M
 
     
     public double doStep(double deltaTime, double time, double[] state) {
-        super.addToEvaluationCounter(1);
         switch(lastStep) {
             case 0 : 
                 derivativeIm3 = mProblem.getDerivative(time, state);
@@ -65,7 +64,6 @@ public class FixedStepPredictorCorrector4Method extends FixedStepAdamsBashford4M
      * @return the value of time of the step taken, state will contain the updated state
      */
     public double adamsMoultonStep(double deltaTime, double time, double[] state, double[] newState) {
-        super.addToEvaluationCounter(1);
         double[] derivativeIp1 = mProblem.getDerivative(time, predictorState);
         double h24 = deltaTime/24.0;
         for (int i=0; i<state.length; i++) {

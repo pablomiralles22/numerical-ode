@@ -47,7 +47,6 @@ abstract public class FixedStepMethod {
     protected InitialValueProblem mProblem;
     protected double mStep;
     protected NumericalSolution mSolution;
-    protected long mEvaluationCounter = 0;
     
     /**
      * Initializes the method for a given InitialValueProblem
@@ -57,7 +56,7 @@ abstract public class FixedStepMethod {
     protected FixedStepMethod(InitialValueProblem problem, double step) {
         mProblem = problem;
         mStep = step;
-        mSolution = new NumericalSolution(problem);
+        mSolution = new NumericalSolution(problem, getOrder());
     }
     
     /**
@@ -68,6 +67,8 @@ abstract public class FixedStepMethod {
      * @return the value of time of the step taken, state will contain the updated state
      */
     abstract public double doStep(double deltaTime, double time, double[] state);
+    
+    abstract public int getOrder();
     
     /**
      * Get the step
@@ -122,18 +123,5 @@ abstract public class FixedStepMethod {
      * @return an instance of NumericalSolution
      */
     public NumericalSolution getSolution() { return mSolution; }
-    
-    public void resetEvaluationCounter() { 
-        mEvaluationCounter = 0;
-    }
-    
-    public long getEvaluationCounter() {
-        return mEvaluationCounter;
-    }
-
-    protected void addToEvaluationCounter(int add) {
-        mEvaluationCounter += add;
-    }
-    
 
 }

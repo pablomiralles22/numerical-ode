@@ -27,10 +27,14 @@ public class FixedStepAdamsBashford4Method extends FixedStepMethod {
         super(problem,step);
         auxState = problem.getInitialState();
     }
+    
+    @Override
+    public int getOrder() {
+    	return 4;
+    }
 
     
     public double doStep(double deltaTime, double time, double[] state) {
-        super.addToEvaluationCounter(1);
         switch(lastStep) {
             case 0 : 
                 derivativeIm3 = mProblem.getDerivative(time, state);
@@ -80,7 +84,6 @@ public class FixedStepAdamsBashford4Method extends FixedStepMethod {
      * @return the value of time of the step taken, state will contain the updated state
      */
     protected double rungeKuttaStep(double deltaTime, double time, double[] state, double[] k1) {
-        super.addToEvaluationCounter(3);
         double h2 = deltaTime/2.0;
         for (int i=0; i<state.length; i++) {
             auxState[i] = state[i] + h2 * k1[i];

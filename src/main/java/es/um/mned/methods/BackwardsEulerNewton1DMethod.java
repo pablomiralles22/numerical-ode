@@ -1,13 +1,13 @@
 package es.um.mned.methods;
 
-import es.um.mned.auxiliar.ExtendedFunction1D;
+import es.um.mned.interpolation.ExtendedStateFunction;
 import es.um.mned.ode.ExtendedInitialValueProblem;
 import es.um.mned.tools.Newton1D;
 
 public class BackwardsEulerNewton1DMethod extends FixedStepMethod {
 	
 	private static class 
-	BackwardsEuler1DMethodExtendedEquation implements ExtendedFunction1D {
+	BackwardsEuler1DMethodExtendedEquation implements ExtendedStateFunction {
 
 		double t; // current time
 		double x; // current state
@@ -17,15 +17,29 @@ public class BackwardsEulerNewton1DMethod extends FixedStepMethod {
 		public BackwardsEuler1DMethodExtendedEquation(ExtendedInitialValueProblem ivp) {
 			this.ivp = ivp;
 		}
+		
+		@Override
+		public double[] getState(double w) {
+			return new double[] {
+					w - x - h * (ivp.getDerivative(t+h, new double[]{w} ))[0]
+			};
+		}
 
 		@Override
-		public double getValue(double w) {
+		public double getState(double w, int index) {
 			return w - x - 
 					h * (ivp.getDerivative(t+h, new double[]{w} ))[0];
 		}
 
 		@Override
-		public double getDerivative(double w) {
+		public double[] getDerivative(double w) {
+			return new double[] {
+					1 - h * (ivp.getDerivativeDY(t+h, new double[]{w} ))[0]
+			};
+		}
+		
+		@Override
+		public double getDerivative(double w, int index) {
 			return 1 - h * (ivp.getDerivativeDY(t+h, new double[]{w} ))[0];
 		}
 		
@@ -45,6 +59,12 @@ public class BackwardsEulerNewton1DMethod extends FixedStepMethod {
 		mEquation = new BackwardsEuler1DMethodExtendedEquation(problem);
 		mTolerance = tolerance;
 	}
+	
+    
+    @Override
+    public int getOrder() {
+    	return 1;
+    }
 
 	@Override
 	public double doStep(double deltaTime, double time, double[] state) {

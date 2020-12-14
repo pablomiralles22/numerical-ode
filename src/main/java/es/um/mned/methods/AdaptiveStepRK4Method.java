@@ -5,7 +5,6 @@
  */
 package es.um.mned.methods;
 
-import java.util.ArrayList;
 import es.um.mned.ode.InitialValueProblem;
 
 /**
@@ -35,6 +34,12 @@ public class AdaptiveStepRK4Method extends AdaptiveStepMethod {
         mFullStepState = problem.getInitialState();
         mMinimumStepAllowed = step/1.0e6;
     }
+    
+    
+    @Override
+    public int getOrder() {
+    	return 1;
+    }
 
     /**
      * Extrapolated Euler method implementation
@@ -62,7 +67,6 @@ public class AdaptiveStepRK4Method extends AdaptiveStepMethod {
                     state[i] = (16.0*mHalfStepCompleteState[i] - mFullStepState[i])/15.0;
                 }
                 time += mCurrentStep;
-                mStepList.add(mCurrentStep);
                 // Adapt step
                 if (error<1.0e-10) mCurrentStep = 2*mCurrentStep;
                 else {
@@ -93,7 +97,6 @@ public class AdaptiveStepRK4Method extends AdaptiveStepMethod {
      * @return the value of time of the step taken, state will contain the updated state
      */
     private double oneStep(double deltaTime, double time, double[] state, double[] finalState) {
-        super.addToEvaluationCounter(4);
         double h2 = deltaTime/2.0;
         double[] k1 = mProblem.getDerivative(time, state);
         for (int i=0; i<state.length; i++) {

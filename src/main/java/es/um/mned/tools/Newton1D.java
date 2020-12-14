@@ -1,6 +1,10 @@
 package es.um.mned.tools;
 
-import es.um.mned.auxiliar.ExtendedFunction1D;
+import es.um.mned.interpolation.ExtendedStateFunction;
+
+/*
+ * This method assumes f is a one-dimensional state function
+ */
 
 public class Newton1D {
 	
@@ -9,14 +13,14 @@ public class Newton1D {
 
 	
 	public static double solve(
-			ExtendedFunction1D f,
+			ExtendedStateFunction f,
 			double start,
 			double tol
 			) throws Exception {
 		double x = start;
 		
 		for(int i = 0; i < MAX_IT; ++i) {
-			double next = x - f.getValue(x) / f.getDerivative(x);
+			double next = x - f.getState(x, 0) / f.getDerivative(x, 0);
 			if(Math.abs(x - next) < tol)
 				return next;
 			x = next;
@@ -26,7 +30,7 @@ public class Newton1D {
 	}
 	
 	public static double solve(
-			ExtendedFunction1D f,
+			ExtendedStateFunction f,
 			double start
 			) throws Exception {
 		return solve(f, start, DEFAULT_TOL);

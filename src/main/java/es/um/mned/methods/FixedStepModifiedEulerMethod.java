@@ -27,6 +27,11 @@ public class FixedStepModifiedEulerMethod extends FixedStepMethod {
         auxState = problem.getInitialState();
     }
 
+    @Override
+    public int getOrder() {
+    	return 2;
+    }
+    
     /**
      * Modified Euler method implementation
      * @param deltaTime the step to take
@@ -35,7 +40,6 @@ public class FixedStepModifiedEulerMethod extends FixedStepMethod {
      * @return the value of time of the step taken, state will contain the updated state
      */
     public double doStep(double deltaTime, double time, double[] state) {
-        super.addToEvaluationCounter(2);
         double h2 = deltaTime/2.0;
         double[] derivative = mProblem.getDerivative(time, state);
         for (int i=0; i<state.length; i++) {

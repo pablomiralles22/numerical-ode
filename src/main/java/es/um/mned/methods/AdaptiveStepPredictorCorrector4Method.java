@@ -5,9 +5,7 @@
  */
 package es.um.mned.methods;
 
-import java.util.ArrayList;
 import es.um.mned.ode.InitialValueProblem;
-import es.um.mned.ode.NumericalSolutionPoint;
 
 /**
  * Fixed Step Euler Method
@@ -43,6 +41,12 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
         for (int i=0; i<mStates.length; i++) mStates[i] = problem.getInitialState();
         mAuxState = problem.getInitialState();
     }
+    
+    
+    @Override
+    public int getOrder() {
+    	return 4;
+    }
 
     /**
      * Extrapolated Euler method implementation
@@ -61,14 +65,12 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
                 currentTime  = mTimes[0];
                 currentState = mStates[0];
             }
-            // Predictor: 4-steps Adams-Bashford 
-            super.addToEvaluationCounter(1);
+            // Predictor: 4-steps Adams-Bashford
             mDerivatives[0] = mProblem.getDerivative(currentTime, currentState);
             for  (int i=0; i<state.length; i++) {
                 mPredictorState[i] = currentState[i] + h24 * ( 55*mDerivatives[0][i] - 59*mDerivatives[1][i] + 37*mDerivatives[2][i] -9*mDerivatives[3][i]);
             }
             // Corrector: 3-steps Adams-Moulton 
-            super.addToEvaluationCounter(1);
             double[] derivativeIp1 = mProblem.getDerivative(currentTime+mCurrentStep, mPredictorState);
             for (int i=0; i<state.length; i++) {
                 mCorrectorState[i] = currentState[i] + h24 * ( 9*derivativeIp1[i] + 19*mDerivatives[0][i] -5*mDerivatives[1][i] + mDerivatives[2][i]);
@@ -84,7 +86,6 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
             if (error<maxErrorAllowed) {
                 time = currentTime + mCurrentStep;
                 System.arraycopy(mCorrectorState,0,state,0,state.length);
-                mStepList.add(mCurrentStep);
                 if (mMustRestart) { // Add the starting steps
                     // This is somewhat unique. The first doStep() method that adds points to the solution by itself
                     for (int i=mStates.length-1; i>=0; i--) getSolution().add(mTimes[i], mStates[i]);
@@ -138,7 +139,6 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
 
     
     protected double rungeKuttaStep(double deltaTime, double time, double[] state, double[] newState, double[] k1) {
-        super.addToEvaluationCounter(3);
         double h2 = deltaTime/2.0;
         for (int i=0; i<state.length; i++) {
             mAuxState[i] = state[i] + h2 * k1[i];

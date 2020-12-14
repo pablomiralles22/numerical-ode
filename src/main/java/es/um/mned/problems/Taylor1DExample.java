@@ -32,6 +32,12 @@ public class Taylor1DExample extends InitialValueProblem {
         public Taylor1DExample2ndOrderSolver(InitialValueProblem problem, double step) {
             super(problem, step);
         }
+        
+        
+        @Override
+        public int getOrder() {
+        	return 2;
+        }
     
         @Override
         public double doStep(double h, double t, double[] state) {
@@ -45,6 +51,12 @@ public class Taylor1DExample extends InitialValueProblem {
 
         public Taylor1DExample4thdOrderSolver(InitialValueProblem problem, double step) {
             super(problem, step);
+        }
+        
+        
+        @Override
+        public int getOrder() {
+        	return 4;
         }
     
         @Override

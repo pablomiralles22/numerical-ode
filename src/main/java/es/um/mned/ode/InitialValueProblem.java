@@ -16,10 +16,12 @@ import java.util.Arrays;
 public abstract class InitialValueProblem {
 	double t0;
 	double[] x0;
+	int evaluationCounter;
     
     public InitialValueProblem(double t0, double[] x0) {
 		this.t0 = t0;
 		this.x0 = x0;
+		evaluationCounter = 0;
 	}
 
 	/**
@@ -45,5 +47,17 @@ public abstract class InitialValueProblem {
      * @return a newly created array with the value of the derivative
      */
     public abstract double[] getDerivative(double time, double[] state);
+    
+    public void addToEvaluationCounter() {
+    	evaluationCounter++;
+    }
+    
+    public int getEvaluationCounter() {
+    	return evaluationCounter;
+    }
+    
+    public void resetEvaluationCounter() {
+    	evaluationCounter = 0;
+    }
     
 }

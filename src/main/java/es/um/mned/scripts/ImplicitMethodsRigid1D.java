@@ -7,14 +7,13 @@ import es.um.mned.problems.Rigid1D;
 
 public class ImplicitMethodsRigid1D {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		double maxTime = 8;
 		double tolerance = 1e-10;
         ExtendedInitialValueProblem problem = new Rigid1D(0., new double[] {-1});
-
         double hStep = 1e-5;
-        FixedStepMethod method = new BackwardsEulerNewton1DMethod(problem,hStep, tolerance);
-        // FixedStepMethod method = new TrapezoidalNewton1DMethod(problem, hStep, tolerance);
+        // FixedStepMethod method = new BackwardsEulerNewton1DMethod(problem,hStep, tolerance);
+        FixedStepMethod method = new TrapezoidalNewton1DMethod(problem, hStep, tolerance);
         //method = new FixedStepPredictorCorrector4Method(problem,10);
         //method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance);
         
@@ -25,8 +24,7 @@ public class ImplicitMethodsRigid1D {
         // DisplaySolution.listError(method.getSolution(), new Rigid1D.TrueSol(), new int[]{0});
         double err = method.getSolution().getMaxError(new Rigid1D.TrueSol());
         System.out.println("Error = " + err);
-        if (method instanceof AdaptiveStepMethod) DisplaySequence.plot(((AdaptiveStepMethod) method).getStepList());
-        System.out.println ("Evaluations = "+method.getEvaluationCounter());
-
+        if (method instanceof AdaptiveStepMethod) DisplaySequence.plot(((AdaptiveStepMethod) method).getSolution().getStepList());
+        System.out.println ("Evaluations = "+problem.getEvaluationCounter());
 	}
 }

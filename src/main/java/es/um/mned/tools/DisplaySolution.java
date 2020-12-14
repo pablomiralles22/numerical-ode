@@ -90,7 +90,7 @@ public class DisplaySolution {
     }
     
     static public void timePlot(NumericalSolution solution, int skip) {
-        int dimension = solution.getFirstPoint().getState().length;
+        int dimension = solution.get(0).getState().length;
         int[] indexes = new int[dimension];
         for (int i=0; i<dimension; i++) indexes[i] = i;
         timePlot(solution, indexes,skip);
