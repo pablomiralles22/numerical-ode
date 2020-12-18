@@ -2,8 +2,8 @@ package es.um.mned.scripts;
 
 import es.um.mned.methods.*;
 import es.um.mned.ode.*;
-import es.um.mned.tools.*;
 import es.um.mned.problems.Rigid1D;
+import es.um.mned.utils.*;
 
 public class ImplicitMethodsRigid1D {
 
@@ -13,7 +13,7 @@ public class ImplicitMethodsRigid1D {
         ExtendedInitialValueProblem problem = new Rigid1D(0., new double[] {-1});
         double hStep = 1e-5;
         // FixedStepMethod method = new BackwardsEulerNewton1DMethod(problem,hStep, tolerance);
-        FixedStepMethod method = new TrapezoidalNewton1DMethod(problem, hStep, tolerance);
+        FixedStepMethod method = new FixedStepTrapezoidalNewton1DMethod(problem, hStep, tolerance);
         //method = new FixedStepPredictorCorrector4Method(problem,10);
         //method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance);
         

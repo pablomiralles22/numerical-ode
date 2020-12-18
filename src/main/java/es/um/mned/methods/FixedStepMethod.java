@@ -43,10 +43,10 @@ abstract public class FixedStepMethod {
         return maxError;
     }
     
-    
+    private double mStep;
+    private NumericalSolution mSolution;
+    protected double currentUserTime;
     protected InitialValueProblem mProblem;
-    protected double mStep;
-    protected NumericalSolution mSolution;
     
     /**
      * Initializes the method for a given InitialValueProblem
@@ -56,6 +56,7 @@ abstract public class FixedStepMethod {
     protected FixedStepMethod(InitialValueProblem problem, double step) {
         mProblem = problem;
         mStep = step;
+        currentUserTime = problem.getInitialTime();
         mSolution = new NumericalSolution(problem, getOrder());
     }
     
@@ -77,12 +78,34 @@ abstract public class FixedStepMethod {
     public double getStep() {
         return mStep;
     }
+
+    protected double solveUpTo(double t) {
+        NumericalSolutionPoint lastPoint = mSolution.getLastPoint();
+        double time = lastPoint.getTime();
+        double[] state = lastPoint.getState();
+        if (mStep > 0) {
+            while (time < t) {
+                time = doStep(mStep,time,state);
+                if (Double.isNaN(time)) return Double.NaN;
+                mSolution.add(time, state);
+            }
+        } 
+        else if (mStep < 0) {
+            while (time>t) {
+                time = doStep(mStep,time,state);
+                if (Double.isNaN(time)) return Double.NaN;
+                mSolution.add(time, state);
+            }
+        }
+        return time;
+    }
     
     /**
      * Steps the problem once
      * @return the newly computed solution point, null if there was any error
      */
     public NumericalSolutionPoint step() {
+    	currentUserTime += mStep;
         NumericalSolutionPoint lastPoint = mSolution.getLastPoint();
         double time = lastPoint.getTime();
         double[] state = lastPoint.getState();
@@ -97,25 +120,10 @@ abstract public class FixedStepMethod {
      * @return the actual time of the last computed solution point (may differ -exceed- the requested finalTime).
      * returns NaN if there was any error in the solving
      */
-    public double solve(double finalTime) {
-        NumericalSolutionPoint lastPoint = mSolution.getLastPoint();
-        double time = lastPoint.getTime();
-        double[] state = lastPoint.getState();
-        if (mStep>0) {
-            while (time<finalTime) {
-                time = doStep(mStep,time,state);
-                if (Double.isNaN(time)) return Double.NaN;
-                mSolution.add(time, state);
-            }
-        } 
-        else if (mStep<0) {
-            while (time>finalTime) {
-                time = doStep(mStep,time,state);
-                if (Double.isNaN(time)) return Double.NaN;
-                mSolution.add(time, state);
-            }
-        } // does nothing if mStep = 0
-        return time;
+    public NumericalSolution solve(double finalTime) {
+        currentUserTime = finalTime;
+        solveUpTo(finalTime);
+        return mSolution;
     }
     
     /**

@@ -8,8 +8,8 @@ import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.ode.NumericalSolutionPoint;
 import es.um.mned.problems.ParabolicThrowWithFriction;
 import es.um.mned.problems.ParabolicThrowWithFriction.TrueSol;
-import es.um.mned.tools.BisectionMethod;
-import es.um.mned.tools.DisplaySolution;
+import es.um.mned.utils.BisectionMethod;
+import es.um.mned.utils.DisplaySolution;
 
 public class ParabolicThrowTest {
 	

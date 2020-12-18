@@ -5,7 +5,7 @@ import es.um.mned.methods.FixedStepMethod;
 import es.um.mned.ode.NumericalSolution;
 import es.um.mned.problems.SimpleHarmonicOscillator;
 import es.um.mned.problems.SimpleHarmonicOscillator.TrueSol;
-import es.um.mned.tools.DisplaySolution;
+import es.um.mned.utils.DisplaySolution;
 
 public class SHOEulerMethod {
 

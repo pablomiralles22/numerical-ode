@@ -26,6 +26,10 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
     protected double[][] mStates      = new double[sSTEPS-1][]; // ordered 2 = (i-2), 1 = (i-1) , 0 = i
     protected double[][] mDerivatives = new double[sSTEPS][];   // ordered 3 = (i-3), 2 = (i-2), 1 = (i-1) , 0 = i
 
+    private int dim;
+    private int queueTop = -1;
+    private double[][] queue;
+
     /**
      * Initializes the method for a given InitialValueProblem
      * @param InitialValueProblem problem 
@@ -40,6 +44,9 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
         mCorrectorState = problem.getInitialState();
         for (int i=0; i<mStates.length; i++) mStates[i] = problem.getInitialState();
         mAuxState = problem.getInitialState();
+        // ------
+        dim = problem.getInitialState().length;
+        queue = new double[sSTEPS-1][dim];
     }
     
     
@@ -56,6 +63,11 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
      * @return the value of time of the step taken, state will contain the updated state
      */
     public double doStep(double deltaTime, double time, double[] state) {
+        if(queueTop >= 0) { // QUEUED STEPS
+            System.arraycopy(queue[queueTop--], 0, state, 0, state.length);
+            return time + deltaTime;
+        }
+        // GENERATE NEW POINTS
         while (mCurrentStep>=mMinimumStepAllowed) {
             double h24 = mCurrentStep/24.0;
             double currentTime=time;
@@ -75,21 +87,26 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
             for (int i=0; i<state.length; i++) {
                 mCorrectorState[i] = currentState[i] + h24 * ( 9*derivativeIp1[i] + 19*mDerivatives[0][i] -5*mDerivatives[1][i] + mDerivatives[2][i]);
             }
+            // CALCULATE ERROR
             double norm = 0;
             for (int i=0; i<state.length; i++) {
                 double diffInIndex = mCorrectorState[i]-mPredictorState[i];
                 norm += diffInIndex*diffInIndex;
             }
             norm = Math.sqrt(norm);
-            double error = 19.0*norm/270.0;
-            double maxErrorAllowed = mTolerance*mCurrentStep;
-            if (error<maxErrorAllowed) {
+            double error = 19.0 * norm / 270.0;
+            double maxErrorAllowed = mTolerance * mCurrentStep;
+            if (error < maxErrorAllowed) { // ACCEPT
                 time = currentTime + mCurrentStep;
-                System.arraycopy(mCorrectorState,0,state,0,state.length);
-                if (mMustRestart) { // Add the starting steps
-                    // This is somewhat unique. The first doStep() method that adds points to the solution by itself
-                    for (int i=mStates.length-1; i>=0; i--) getSolution().add(mTimes[i], mStates[i]);
-                    //System.out.println ("FOUR POINTS ADDED from  t = "+mTimes[2]+ " to t =  "+time);
+                
+                if (mMustRestart) { // return the first one of the 4, queue the rest.
+                    System.arraycopy(mStates[sSTEPS - 1], 0, state, 0, dim); 
+                    for (int i = sSTEPS-1; i>=1; i--)
+                        System.arraycopy(mStates[i-1], 0, queue[i], 0, dim);
+                    System.arraycopy(mCorrectorState, 0, queue[0], 0, dim);
+                    queueTop = sSTEPS-2;
+                } else { // just return current point
+                    System.arraycopy(mCorrectorState, 0, state, 0, state.length);
                 }
                 
                 if (error < maxErrorAllowed*0.1) { // error is really small --> adapt step
@@ -104,8 +121,7 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
                         //System.out.println ("  New step is "+mCurrentStep+" state= "+state[0]);
                     }   
                     mMustRestart = true;
-                }
-                else {
+                } else {
                     //System.out.println ("ACCEPTED: t = "+time+ " with step "+mCurrentStep+ " error = "+error);
                     for (int i=mDerivatives.length-1; i>0; i--) // Prepare next step
                         System.arraycopy(mDerivatives[i-1],0,mDerivatives[i],0,state.length);

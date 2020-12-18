@@ -10,7 +10,7 @@ import es.um.mned.interpolation.StateFunction;
 import es.um.mned.interpolation.*;
 import es.um.mned.methods.*;
 import es.um.mned.ode.*;
-import es.um.mned.tools.*;
+import es.um.mned.utils.*;
 
 /**
  *

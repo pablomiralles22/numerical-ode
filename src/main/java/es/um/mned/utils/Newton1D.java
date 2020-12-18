@@ -1,4 +1,4 @@
-package es.um.mned.tools;
+package es.um.mned.utils;
 
 import es.um.mned.interpolation.ExtendedStateFunction;
 

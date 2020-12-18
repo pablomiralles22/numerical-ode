@@ -7,10 +7,8 @@ package es.um.mned.ode;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.HashMap;
 
-import es.um.mned.interpolation.HermiteInterpolator;
 import es.um.mned.interpolation.StateFunction;
 import es.um.mned.interpolation.Interpolator;
 
@@ -21,19 +19,22 @@ import es.um.mned.interpolation.Interpolator;
  * @author F. Esquembre
  * @version September 2020
  */
-public class NumericalSolution {
+public class NumericalSolution implements StateFunction{
 	private InitialValueProblem ivp;
     private ArrayList<NumericalSolutionPoint> pointList;
     private HashMap<Integer, StateFunction> interpolators;
     private int order;
+    
+    /*
+     * Creates another solution for extrapolation purposes.
+     * The new solution uses the same problem, mind it when
+     * checking the number of evaluations.
+     */
+    public static NumericalSolution createExtrapolationSol(NumericalSolution other) {
+    	return new NumericalSolution(other.ivp, other.order + 1);
+    }
    
-//    /**
-//     * Creates an empty NumericalSolution
-//     * @param problem the InitialValueProblem being solved
-//     */
-//    public NumericalSolution() {
-//        pointList = new ArrayList<>();
-//    }
+
     /**
      * Creates a NumericalSolution with the initial condition as first point
      * @param problem the InitialValueProblem being solved
@@ -73,7 +74,9 @@ public class NumericalSolution {
     public void removeLast(int howMany) {
         int size = pointList.size();
         howMany = Math.min(howMany, size);
-        for (int i=0,last=size-1; i<howMany; i++,last--) pointList.remove(last);
+        for (int i=0,last=size-1; i<howMany; i++,last--) {
+            pointList.remove(last);
+        }
     }
     
     /**
@@ -94,27 +97,8 @@ public class NumericalSolution {
         return pointList.subList(size-numberOfPoints, size).iterator();
     }
     
-    /*
-     * Returns max error given analytical solution
-     */
-    public double getMaxError(StateFunction analyticalSolution) {
-    	double err = 0.0;
-    	for(NumericalSolutionPoint p : pointList) {
-    		double currentErr = 0.0;
-    		for(int i=0; i < p.getState().length; ++i) {
-    			double diff = (p.getState(i) - analyticalSolution.getState(p.getTime(), i));
-    			currentErr += diff*diff;
-    		}
-    		err = Math.max(err, currentErr);
-    	}
-    	return Math.sqrt(err);
-    }
-    
-    public ArrayList<Double> getStepList() {
-    	ArrayList<Double> stepList = new ArrayList<>(pointList.size()-1);
-    	for(int i=0; i+1 < pointList.size(); ++i)
-    		stepList.add(pointList.get(i+1).getTime() - pointList.get(i).getTime());
-    	return stepList;
+    public int getSize() {
+    	return pointList.size();
     }
     
     private void putInterpolator(int index) {
@@ -146,38 +130,70 @@ public class NumericalSolution {
         interpolators.put(index, new Interpolator(m));
     }
     
-    public double[] getState(double t) throws Exception {
+    public StateFunction getInterpolator(int index) {
+    	if(index < 0 || index > pointList.size())
+    		return null;
+    	
+    	if(!interpolators.containsKey(index))
+    		putInterpolator(index);
+    	
+    	return interpolators.get(index);
+    }
+    
+    public double[] getState(double t) {
     	if(pointList.isEmpty() || t<pointList.get(0).getTime()
     			|| t>pointList.get(pointList.size()-1).getTime())
-    		throw new Exception("Evaluation out of bounds.");
+    		System.err.println("Evaluation out of bounds, precision not guaranteed.");
     	
-    	int l = 0, r = pointList.size()-1;
+    	int l = 1, r = pointList.size()-1;
     	while(l <= r) {
     		int m = (l+r) / 2;
     		if(pointList.get(m).getTime() <= t) l = m+1;
     		else r = m-1;
-    	} // doesn't matter if t == r due to the way I select points
-    	
-    	if(!interpolators.containsKey(l))
-            putInterpolator(l);
-		return interpolators.get(l).getState(t);
+    	}
+
+        l = Math.min(l, pointList.size()-1);
+
+		return getInterpolator(l).getState(t);
     }
 
-   public double getState(double t, int index) throws Exception {
+   public double getState(double t, int index) {
 	   if(pointList.isEmpty() || t<pointList.get(0).getTime()
    			|| t>pointList.get(pointList.size()-1).getTime())
-   		throw new Exception("Evaluation out of bounds.");
+    		System.err.println("Evaluation out of bounds, precision not guaranteed.");
    	
-	   	int l = 0, r = pointList.size()-1;
+	   	int l = 1, r = pointList.size()-1;
 	   	while(l <= r) {
 	   		int m = (l+r) / 2;
 	   		if(pointList.get(m).getTime() <= t) l = m+1;
 	   		else r = m-1;
-	   	} // doesn't matter if t == r due to the way I select points
+	   	}
+
+        l = Math.min(l, pointList.size()-1);
 	   	
-	   	if(!interpolators.containsKey(l))
-	           putInterpolator(l);
-			return interpolators.get(l).getState(t)[index];
+	   	return getInterpolator(l).getState(t, index);
    }
+   
+    /*
+     * Returns max error given analytical solution
+     */
+    public double getMaxError(StateFunction analyticalSolution) {
+    	double err = 0.0;
+    	for(NumericalSolutionPoint p : pointList) {
+    		double currentErr = 0.0;
+    		for(int i=0; i < p.getState().length; ++i) {
+    			double diff = (p.getState(i) - analyticalSolution.getState(p.getTime(), i));
+    			currentErr += diff*diff;
+    		}
+    		err = Math.max(err, currentErr);
+    	}
+    	return Math.sqrt(err);
+    }
     
+    public ArrayList<Double> getStepList() {
+    	ArrayList<Double> stepList = new ArrayList<>(pointList.size()-1);
+    	for(int i=0; i+1 < pointList.size(); ++i)
+    		stepList.add(pointList.get(i+1).getTime() - pointList.get(i).getTime());
+    	return stepList;
+    }
 }

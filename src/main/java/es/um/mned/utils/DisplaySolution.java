@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package es.um.mned.tools;
+package es.um.mned.utils;
 
 import java.util.Iterator;
 import org.opensourcephysics.frames.PlotFrame; 

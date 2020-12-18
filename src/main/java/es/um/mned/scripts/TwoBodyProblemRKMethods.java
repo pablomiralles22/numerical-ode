@@ -13,9 +13,9 @@ import es.um.mned.methods.FixedStepPredictorCorrector4Method;
 import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.ode.NumericalSolutionPoint;
 import es.um.mned.problems.TwoBodyProblem;
-import es.um.mned.tools.BisectionMethod;
-import es.um.mned.tools.DisplaySequence;
-import es.um.mned.tools.DisplaySolution;
+import es.um.mned.utils.BisectionMethod;
+import es.um.mned.utils.DisplaySequence;
+import es.um.mned.utils.DisplaySolution;
 
 public class TwoBodyProblemRKMethods {
 

@@ -9,7 +9,7 @@ import es.um.mned.interpolation.StateFunction;
 import es.um.mned.methods.FixedStepEulerMethod;
 import es.um.mned.methods.FixedStepMethod;
 import es.um.mned.ode.*;
-import es.um.mned.tools.DisplaySolution;
+import es.um.mned.utils.DisplaySolution;
 
 /**
  *
