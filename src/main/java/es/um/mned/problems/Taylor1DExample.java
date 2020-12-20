@@ -9,6 +9,7 @@ import es.um.mned.interpolation.StateFunction;
 import es.um.mned.methods.FixedStepEulerMethod;
 import es.um.mned.methods.FixedStepMethod;
 import es.um.mned.ode.*;
+import es.um.mned.utils.ConvergenceException;
 import es.um.mned.utils.DisplaySolution;
 
 /**
@@ -102,7 +103,7 @@ public class Taylor1DExample extends InitialValueProblem {
     }
     
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ConvergenceException {
         double maxTime = 2;
         double h = 0.1;
         

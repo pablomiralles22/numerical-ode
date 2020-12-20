@@ -9,6 +9,10 @@ import java.util.Iterator;
 import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.ode.NumericalSolution;
 import es.um.mned.ode.NumericalSolutionPoint;
+import es.um.mned.ode.Event;
+import es.um.mned.interpolation.StateFunction;
+import es.um.mned.utils.BisectionMethod;
+import es.um.mned.utils.ConvergenceException;
 
 /**
  * Abstract class for a Fixed Step Method to solve an InitialValueProblem
@@ -45,7 +49,8 @@ abstract public class FixedStepMethod {
     
     private double mStep;
     private NumericalSolution mSolution;
-    protected double currentUserTime;
+    private Event event = null;
+	protected double currentUserTime;
     protected InitialValueProblem mProblem;
     
     /**
@@ -59,6 +64,13 @@ abstract public class FixedStepMethod {
         currentUserTime = problem.getInitialTime();
         mSolution = new NumericalSolution(problem, getOrder());
     }
+
+    protected FixedStepMethod(InitialValueProblem problem, double step, Event event) {
+        this(problem, step);
+        this.event = event;
+    }
+    
+    abstract public int getOrder();
     
     /**
      * Particular method implementation
@@ -69,8 +81,6 @@ abstract public class FixedStepMethod {
      */
     abstract public double doStep(double deltaTime, double time, double[] state);
     
-    abstract public int getOrder();
-    
     /**
      * Get the step
      * @return the initial step given
@@ -78,8 +88,61 @@ abstract public class FixedStepMethod {
     public double getStep() {
         return mStep;
     }
+    
+    public Event getEvent() {
+		return event;
+	}
 
-    protected double solveUpTo(double t) {
+	public void setEvent(Event event) {
+		this.event = event;
+	}
+
+
+    private static class EventStateFunction implements StateFunction {
+        private StateFunction interpolator;
+        private Event event;
+
+        public EventStateFunction(StateFunction interpolator, Event event) {
+            this.interpolator = interpolator;
+            this.event = event;
+        }
+        
+        public double[] getState(double t) {
+            return new double[] {
+                event.crossFunction(t, interpolator.getState(t))
+            };
+        }
+
+        public double getState(double t, int index) {
+            return event.crossFunction(t, interpolator.getState(t));
+        }
+    }
+
+    private void checkEvent() throws ConvergenceException {
+        if(event == null) return;
+        int size = mSolution.getSize();
+        if(size <= 1) return;
+
+        NumericalSolutionPoint p1 = mSolution.get(size-2);
+        NumericalSolutionPoint p2 = mSolution.get(size-1);
+
+        if(event.crossFunction(p1.getTime(), p1.getState())
+                * event.crossFunction(p2.getTime(), p2.getState()) <= 0) {
+
+            StateFunction interpolator = mSolution.getInterpolator(size-1);
+            double zero = BisectionMethod.findZero(
+                    new EventStateFunction(interpolator, event),
+                    p1.getTime(),
+                    p2.getTime(),
+                    event.getTolerance(),
+                    0
+                    );
+            event.crossAction(zero, interpolator.getState(zero));
+        }
+
+    }
+
+    protected double solveUpTo(double t) throws ConvergenceException {
         NumericalSolutionPoint lastPoint = mSolution.getLastPoint();
         double time = lastPoint.getTime();
         double[] state = lastPoint.getState();
@@ -88,6 +151,7 @@ abstract public class FixedStepMethod {
                 time = doStep(mStep,time,state);
                 if (Double.isNaN(time)) return Double.NaN;
                 mSolution.add(time, state);
+                checkEvent();
             }
         } 
         else if (mStep < 0) {
@@ -103,15 +167,18 @@ abstract public class FixedStepMethod {
     /**
      * Steps the problem once
      * @return the newly computed solution point, null if there was any error
+     * @throws ConvergenceException 
      */
-    public NumericalSolutionPoint step() {
+    public NumericalSolutionPoint step() throws ConvergenceException {
     	currentUserTime += mStep;
         NumericalSolutionPoint lastPoint = mSolution.getLastPoint();
         double time = lastPoint.getTime();
         double[] state = lastPoint.getState();
         time = doStep(mStep,time,state);
         if (Double.isNaN(time)) return null;
-        return mSolution.add(time, state);
+        NumericalSolutionPoint point = mSolution.add(time, state);
+        checkEvent();
+        return point;
     }
     
     /**
@@ -119,8 +186,9 @@ abstract public class FixedStepMethod {
      * @param finalTime the time which we want to reach or exceed
      * @return the actual time of the last computed solution point (may differ -exceed- the requested finalTime).
      * returns NaN if there was any error in the solving
+     * @throws ConvergenceException 
      */
-    public NumericalSolution solve(double finalTime) {
+    public NumericalSolution solve(double finalTime) throws ConvergenceException {
         currentUserTime = finalTime;
         solveUpTo(finalTime);
         return mSolution;

@@ -5,6 +5,7 @@ import es.um.mned.methods.FixedStepMethod;
 import es.um.mned.ode.NumericalSolution;
 import es.um.mned.problems.SimpleHarmonicOscillator;
 import es.um.mned.problems.SimpleHarmonicOscillator.TrueSol;
+import es.um.mned.utils.ConvergenceException;
 import es.um.mned.utils.DisplaySolution;
 
 public class SHOEulerMethod {
@@ -13,7 +14,7 @@ public class SHOEulerMethod {
     static private double Xo = 1.5;
     static private double Vo = 0;
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ConvergenceException {
         SimpleHarmonicOscillator shoProblem = new SimpleHarmonicOscillator(0., new double[] {Xo, Vo});
         //FixedStepMethod method = new FixedStepEulerMethod(shoProblem,1.0e-4);
 

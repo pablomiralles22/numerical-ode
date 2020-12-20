@@ -1,6 +1,7 @@
 package es.um.mned.methods;
 
 import es.um.mned.interpolation.ExtendedStateFunction;
+import es.um.mned.ode.Event;
 import es.um.mned.ode.ExtendedInitialValueProblem;
 import es.um.mned.utils.Newton1D;
 
@@ -21,20 +22,19 @@ public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
 		@Override
 		public double[] getState(double w) {
 			return new double[] {
-					w - x - h * (ivp.getDerivative(t+h, new double[]{w} ))[0]
+				w - x - h * (ivp.getDerivative(t+h, new double[]{w} ))[0]
 			};
 		}
 
 		@Override
 		public double getState(double w, int index) {
-			return w - x - 
-					h * (ivp.getDerivative(t+h, new double[]{w} ))[0];
+			return w - x - h * (ivp.getDerivative(t+h, new double[]{w} ))[0];
 		}
 
 		@Override
 		public double[] getDerivative(double w) {
 			return new double[] {
-					1 - h * (ivp.getDerivativeDY(t+h, new double[]{w} ))[0]
+				1 - h * (ivp.getDerivativeDY(t+h, new double[]{w} ))[0]
 			};
 		}
 		
@@ -58,6 +58,11 @@ public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
 		super(problem, step);
 		mEquation = new BackwardsEuler1DMethodExtendedEquation(problem);
 		mTolerance = tolerance;
+	}
+	
+	public FixedStepBackwardsEulerNewton1DMethod(ExtendedInitialValueProblem problem, double step, double tolerance, Event event) {
+		this(problem, step, tolerance);
+		super.setEvent(event);
 	}
 	
     

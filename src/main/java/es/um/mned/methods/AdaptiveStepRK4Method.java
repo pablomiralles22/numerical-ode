@@ -5,6 +5,7 @@
  */
 package es.um.mned.methods;
 
+import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 
 /**
@@ -33,6 +34,11 @@ public class AdaptiveStepRK4Method extends AdaptiveStepMethod {
         mHalfStepCompleteState = problem.getInitialState();
         mFullStepState = problem.getInitialState();
         mMinimumStepAllowed = step/1.0e6;
+    }
+    
+    public AdaptiveStepRK4Method(InitialValueProblem problem, double step, double tolerance, Event event) {
+        this(problem, step, tolerance);
+        super.setEvent(event);
     }
     
     

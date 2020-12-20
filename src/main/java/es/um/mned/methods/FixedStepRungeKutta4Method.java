@@ -5,6 +5,7 @@
  */
 package es.um.mned.methods;
 
+import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 
 /**
@@ -24,6 +25,11 @@ public class FixedStepRungeKutta4Method extends FixedStepMethod {
     public FixedStepRungeKutta4Method(InitialValueProblem problem, double step) {
         super(problem,step);
         auxState = problem.getInitialState();
+    }
+    
+    public FixedStepRungeKutta4Method(InitialValueProblem problem, double step, Event event) {
+        this(problem,step);
+        super.setEvent(event);
     }
     
     @Override

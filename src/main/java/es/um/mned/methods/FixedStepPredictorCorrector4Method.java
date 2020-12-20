@@ -5,6 +5,7 @@
  */
 package es.um.mned.methods;
 
+import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 
 /**
@@ -24,6 +25,11 @@ public class FixedStepPredictorCorrector4Method extends FixedStepAdamsBashford4M
     public FixedStepPredictorCorrector4Method(InitialValueProblem problem, double step) {
         super(problem,step);
         predictorState = problem.getInitialState();
+    }
+    
+    public FixedStepPredictorCorrector4Method(InitialValueProblem problem, double step, Event event) {
+        this(problem,step);
+        super.setEvent(event);
     }
 
     

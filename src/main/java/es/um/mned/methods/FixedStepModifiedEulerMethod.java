@@ -5,6 +5,7 @@
  */
 package es.um.mned.methods;
 
+import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 
 /**
@@ -25,6 +26,11 @@ public class FixedStepModifiedEulerMethod extends FixedStepMethod {
     public FixedStepModifiedEulerMethod(InitialValueProblem problem, double step) {
         super(problem,step);
         auxState = problem.getInitialState();
+    }
+    
+    public FixedStepModifiedEulerMethod(InitialValueProblem problem, double step, Event event) {
+        this(problem,step);
+        super.setEvent(event);
     }
 
     @Override

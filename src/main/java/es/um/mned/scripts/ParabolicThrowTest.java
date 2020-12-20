@@ -9,11 +9,12 @@ import es.um.mned.ode.NumericalSolutionPoint;
 import es.um.mned.problems.ParabolicThrowWithFriction;
 import es.um.mned.problems.ParabolicThrowWithFriction.TrueSol;
 import es.um.mned.utils.BisectionMethod;
+import es.um.mned.utils.ConvergenceException;
 import es.um.mned.utils.DisplaySolution;
 
 public class ParabolicThrowTest {
 	
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ConvergenceException {
         InitialValueProblem problem = new ParabolicThrowWithFriction(0., new double[] { 0, 100, 300, 0 }, 0.);
         FixedStepMethod method = new FixedStepEulerMethod(problem,1.0e-2);
         
@@ -33,7 +34,13 @@ public class ParabolicThrowTest {
         TrueSol sol = new TrueSol();
         if (false) { // find zero
             StateFunction interpolator = new EulerMethodInterpolator(problem, previousPoint);
-            double zeroYAt = BisectionMethod.findZero (interpolator, previousPoint.getTime(), currentPoint.getTime(), 1.0e-8, 2);
+            double zeroYAt;
+			try {
+				zeroYAt = BisectionMethod.findZero (interpolator, previousPoint.getTime(), currentPoint.getTime(), 1.0e-8, 2);
+			} catch (ConvergenceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             if (Double.isNaN(zeroYAt)) {
                 System.out.print ("Zero not found!!!");
             }

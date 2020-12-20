@@ -2,7 +2,7 @@ package es.um.mned.ode;
 
 import es.um.mned.interpolation.StateFunction;
 
-public abstract class Event implements StateFunction {
+public abstract class Event {
 	
 	private boolean blocking;
 	private double tolerance;

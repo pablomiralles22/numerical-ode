@@ -1,6 +1,7 @@
 package es.um.mned.methods;
 
 import es.um.mned.interpolation.ExtendedStateFunction;
+import es.um.mned.ode.Event;
 import es.um.mned.ode.ExtendedInitialValueProblem;
 import es.um.mned.utils.Newton1D;
 
@@ -57,6 +58,11 @@ public class FixedStepTrapezoidalNewton1DMethod extends FixedStepMethod {
 		super(problem, step);
 		mEquation = new Trapezoidal1DMethodExtendedEquation(problem);
 		mTolerance = tolerance;
+	}
+	
+	public FixedStepTrapezoidalNewton1DMethod(ExtendedInitialValueProblem problem, double step, double tolerance, Event event) {
+		this(problem, step, tolerance);
+		super.setEvent(event);
 	}
 	
 	@Override

@@ -7,6 +7,7 @@ package es.um.mned.methods;
 
 import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.ode.NumericalSolutionPoint;
+import es.um.mned.utils.ConvergenceException;
 
 /**
  * Abstract class for a Fixed Step Method to solve an InitialValueProblem
@@ -33,7 +34,7 @@ abstract public class AdaptiveStepMethod extends FixedStepMethod {
     }
     
     @Override
-    public NumericalSolutionPoint step() {
+    public NumericalSolutionPoint step() throws ConvergenceException {
         currentUserTime += getStep();
         double time = solveUpTo(currentUserTime);
         if(time == Double.NaN) return null;

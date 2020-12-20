@@ -29,8 +29,9 @@ public class BisectionMethod {
      * @param tolerance
      * @param index 
      * @return the time at which zero is found (with the given tolerance). NaN if not found
+     * @throws ConvergenceException 
      */
-    static public double findZero (StateFunction function, double initialTime, double finalTime, double tolerance, int index) {
+    static public double findZero (StateFunction function, double initialTime, double finalTime, double tolerance, int index) throws ConvergenceException {
         tolerance = Math.abs(tolerance);
         if (tolerance==0) tolerance = DEFAULT_TOLERANCE;
 
@@ -56,7 +57,7 @@ public class BisectionMethod {
                 initialState = middleState;
             }
         } while (Math.abs(finalTime-initialTime)>MAXIMUM_TIME_RESOLUTION);
-        return Double.NaN;
+        throw new ConvergenceException("Bisection method did not converge.");
     }
     
 }

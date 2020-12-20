@@ -11,6 +11,7 @@ import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.ode.NumericalSolutionPoint;
 import es.um.mned.problems.ArenstorfOrbits;
 import es.um.mned.utils.BisectionMethod;
+import es.um.mned.utils.ConvergenceException;
 import es.um.mned.utils.DisplaySequence;
 import es.um.mned.utils.DisplaySolution;
 
@@ -19,7 +20,7 @@ public class ArenstorfAdaptativeMethods {
 
     static private double computeCrossing (InitialValueProblem problem, FixedStepMethod method,
             NumericalSolutionPoint fromPoint, NumericalSolutionPoint toPoint, 
-            double tolerance, int index) {
+            double tolerance, int index) throws ConvergenceException {
 //        StateFunction interpolator = new EulerMethodInterpolator(problem, fromPoint);
 //        StateFunction interpolator = new FixedStepMethodInterpolator(method, fromPoint);
         StateFunction interpolator = new HermiteInterpolator(problem, fromPoint, toPoint);
@@ -34,7 +35,7 @@ public class ArenstorfAdaptativeMethods {
         return zeroAt;
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ConvergenceException {
         double hStep = 1.0e-2;
         double tolerance = 1.0e-8;
         InitialValueProblem problem = new ArenstorfOrbits(
@@ -53,7 +54,12 @@ public class ArenstorfAdaptativeMethods {
         double time = problem.getInitialTime();
         while (time<ArenstorfOrbits.PERIOD*2.3) {
             previousPoint = currentPoint;
-            currentPoint = method.step();
+            try {
+				currentPoint = method.step();
+			} catch (ConvergenceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             if (currentPoint==null) {
                 System.out.println ("Method failed at t="+previousPoint.getTime()+" !!!");
                 System.exit(2);

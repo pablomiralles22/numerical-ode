@@ -5,6 +5,7 @@
  */
 package es.um.mned.methods;
 
+import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 
 /**
@@ -47,6 +48,11 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
         // ------
         dim = problem.getInitialState().length;
         queue = new double[sSTEPS-1][dim];
+    }
+    
+    public AdaptiveStepPredictorCorrector4Method(InitialValueProblem problem, double step, double tolerance, Event event) {
+        this(problem, step, tolerance);
+        super.setEvent(event);
     }
     
     

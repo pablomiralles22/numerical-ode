@@ -6,9 +6,12 @@
 package es.um.mned.methods;
 
 import java.util.Iterator;
+
+import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.ode.NumericalSolution;
 import es.um.mned.ode.NumericalSolutionPoint;
+import es.um.mned.utils.ConvergenceException;
 
 /**
  * Fixed Step Euler Method
@@ -25,6 +28,11 @@ public class FixedStepEulerMethod extends FixedStepMethod {
      */
     public FixedStepEulerMethod(InitialValueProblem problem, double step) {
         super(problem,step);
+    }
+    
+    public FixedStepEulerMethod(InitialValueProblem problem, double step, Event event) {
+        this(problem,step);
+        super.setEvent(event);
     }
     
     @Override
@@ -74,10 +82,11 @@ public class FixedStepEulerMethod extends FixedStepMethod {
      * @param initialStep
      * @param minStepAllowed
      * @return 
+     * @throws ConvergenceException 
      */
     static public NumericalSolution extrapolateToTolerance(InitialValueProblem problem, 
             double maxTime, double tolerance, 
-            double initialStep, double minStepAllowed) {
+            double initialStep, double minStepAllowed) throws ConvergenceException {
         
         double h = initialStep;
         FixedStepEulerMethod methodFull = new FixedStepEulerMethod(problem,h);

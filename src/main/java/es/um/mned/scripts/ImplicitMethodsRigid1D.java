@@ -17,7 +17,7 @@ public class ImplicitMethodsRigid1D {
         //method = new FixedStepPredictorCorrector4Method(problem,10);
         //method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance);
         
-        double lastTime = method.solve(maxTime);
+        double lastTime = method.solve(maxTime).getLastPoint().getTime();
         if (Double.isNaN(lastTime)) {
             System.out.println ("Method broke!");
         }
