@@ -106,8 +106,8 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
                 time = currentTime + mCurrentStep;
                 
                 if (mMustRestart) { // return the first one of the 4, queue the rest.
-                    System.arraycopy(mStates[sSTEPS - 1], 0, state, 0, dim); 
-                    for (int i = sSTEPS-1; i>=1; i--)
+                    System.arraycopy(mStates[sSTEPS - 2], 0, state, 0, dim);
+                    for (int i = sSTEPS - 2; i >= 1; i--)
                         System.arraycopy(mStates[i-1], 0, queue[i], 0, dim);
                     System.arraycopy(mCorrectorState, 0, queue[0], 0, dim);
                     queueTop = sSTEPS-2;

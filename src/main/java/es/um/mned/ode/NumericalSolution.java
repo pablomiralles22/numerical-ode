@@ -31,21 +31,28 @@ public class NumericalSolution implements StateFunction{
      * checking the number of evaluations.
      */
     public static NumericalSolution createExtrapolationSol(NumericalSolution other) {
-    	return new NumericalSolution(other.ivp, other.order + 1);
+    	NumericalSolution extrapolatedSol = new NumericalSolution();
+    	extrapolatedSol.ivp = other.ivp;
+    	extrapolatedSol.order = other.order;
+    	return extrapolatedSol;
     }
    
-
+	private NumericalSolution() {
+		pointList = new ArrayList<>();
+	}
+    
     /**
      * Creates a NumericalSolution with the initial condition as first point
      * @param problem the InitialValueProblem being solved
      */
     public NumericalSolution(InitialValueProblem problem, int order) {
+    	this();
     	ivp = problem;
     	interpolators = new HashMap<>();
-        pointList = new ArrayList<>();
         pointList.add(new NumericalSolutionPoint(problem.getInitialTime(),problem.getInitialState()));
         this.order = order;
     }
+
 
 	/**
      * Adds a solution point

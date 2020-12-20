@@ -54,7 +54,14 @@ public class TwoBodyProblemRKMethods {
 
 		@Override
 		public void crossAction(double time, double[] state) {
+			System.out.println("=============================");
 			System.out.println("X coordenate: " + state[0]);
+			System.out.println("Year: " + (int)(time/(24*365)));
+			System.out.println("Day: " + (int)(time/(24) % 365 + 1));
+			System.out.println("Hour: " + (int)(time) % 24);
+			System.out.println("Time: " + time);
+			
+			System.out.println("=============================");
 		}
     	
     }
@@ -66,8 +73,8 @@ public class TwoBodyProblemRKMethods {
         InitialValueProblem problem = new TwoBodyProblem(0., Arrays.copyOf(initState, initState.length));
         FixedStepMethod method = new FixedStepModifiedEulerMethod(problem,10, new YCross(false, tolerance));
         // method = new FixedStepPredictorCorrector4Method(problem,10);
-        //method = new AdaptiveStepPredictorCorrector4Method(problem,hStep, tolerance);
-       // method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance, new YCross(false, tolerance));
+        method = new AdaptiveStepPredictorCorrector4Method(problem,hStep, tolerance, new YCross(false, tolerance));
+        //method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance, new YCross(false, tolerance));
         
         int maxYears = 10;
         
@@ -79,6 +86,7 @@ public class TwoBodyProblemRKMethods {
         
         
         System.out.println ("Evaluations = "+problem.getEvaluationCounter());
+        	
 
         DisplaySolution.statePlot(method.getSolution(), 0, 2);
         if (method instanceof AdaptiveStepMethod) 

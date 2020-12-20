@@ -125,11 +125,14 @@ abstract public class FixedStepMethod {
 
         NumericalSolutionPoint p1 = mSolution.get(size-2);
         NumericalSolutionPoint p2 = mSolution.get(size-1);
+        
+        
 
         if(event.crossFunction(p1.getTime(), p1.getState())
                 * event.crossFunction(p2.getTime(), p2.getState()) <= 0) {
+        	
+        	StateFunction interpolator = mSolution.getInterpolator(size-1);
 
-            StateFunction interpolator = mSolution.getInterpolator(size-1);
             double zero = BisectionMethod.findZero(
                     new EventStateFunction(interpolator, event),
                     p1.getTime(),
@@ -159,6 +162,7 @@ abstract public class FixedStepMethod {
                 time = doStep(mStep,time,state);
                 if (Double.isNaN(time)) return Double.NaN;
                 mSolution.add(time, state);
+                checkEvent();
             }
         }
         return time;

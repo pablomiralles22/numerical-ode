@@ -21,6 +21,7 @@ public class Interpolator implements StateFunction {
     private int n;
 
     public Interpolator(Map<Double, double[][]> m) {
+
         dim = m.values().iterator().next()[0].length;
         n = 0;
         for(double[][] al : m.values()) {
@@ -58,7 +59,6 @@ public class Interpolator implements StateFunction {
 
         for(int i=0; i<n; ++i)
             coeffs[i] = Arrays.copyOf(dd[i][i], dim);
-
     }
 
     public double getState(double t, int index) {
@@ -72,13 +72,13 @@ public class Interpolator implements StateFunction {
     }
 
     public double[] getState(double t) {
-        double[] ans = Arrays.copyOf(coeffs[0], coeffs[0].length);
+        double[] ans = Arrays.copyOf(coeffs[0], dim);
         double aux = 1.;
-        for(int h=0; h<dim; ++h) {
-            for(int i=1; i<n; ++i) {
-                aux *= (t - r[i-1]);
+        
+        for(int i=1; i<n; ++i) {
+        	aux *= (t - r[i-1]);
+        	for(int h=0; h<dim; ++h)
                 ans[h] += aux * coeffs[i][h];
-            }
         }
         return ans;
     }
