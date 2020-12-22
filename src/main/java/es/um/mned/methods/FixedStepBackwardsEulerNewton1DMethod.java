@@ -8,7 +8,7 @@ import es.um.mned.utils.Newton1D;
 
 public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
 	
-	private static class 
+	protected static class 
 	BackwardsEuler1DMethodExtendedEquation implements ExtendedStateFunction {
 
 		double t; // current time
@@ -16,8 +16,9 @@ public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
 		double h;
 		ExtendedInitialValueProblem ivp;
 		
-		public BackwardsEuler1DMethodExtendedEquation(ExtendedInitialValueProblem ivp) {
+		public BackwardsEuler1DMethodExtendedEquation(ExtendedInitialValueProblem ivp, double step) {
 			this.ivp = ivp;
+			h = step;
 		}
 		
 		@Override
@@ -44,12 +45,6 @@ public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
 			return 1 - h * (ivp.getDerivativeDY(t+h, new double[]{w} ))[0];
 		}
 		
-		public void changeParameters(double t, double x, double deltaTime) {
-			this.t = t;
-			this.x = x;
-			this.h = deltaTime;
-		}
-		
 	}
 	
 	BackwardsEuler1DMethodExtendedEquation mEquation;
@@ -57,7 +52,7 @@ public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
 
 	public FixedStepBackwardsEulerNewton1DMethod(ExtendedInitialValueProblem problem, double step, double tolerance) {
 		super(problem, step);
-		mEquation = new BackwardsEuler1DMethodExtendedEquation(problem);
+		mEquation = new BackwardsEuler1DMethodExtendedEquation(problem, step);
 		mTolerance = tolerance;
 	}
 	
@@ -74,7 +69,8 @@ public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
 
 	@Override
 	public double doStep(double deltaTime, double time, double[] state) throws ConvergenceException {
-		mEquation.changeParameters(time, state[0], deltaTime);
+		mEquation.x = state[0];
+		mEquation.t = time;
 		state[0] = Newton1D.solve(mEquation, state[0]);
         return time+deltaTime;
 	}

@@ -10,12 +10,6 @@ import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.utils.ConvergenceException;
 
-/**
- * Fixed Step Euler Method
- * 
- * @author F. Esquembre
- * @version September 2020
- */
 public class AdaptiveStepRKFehlbergMethod extends AdaptiveStepMethod {
     private double mCurrentStep;
     private double mMinimumStepAllowed; // Non-convergence minimum
@@ -35,7 +29,7 @@ public class AdaptiveStepRKFehlbergMethod extends AdaptiveStepMethod {
         mRK4 = problem.getInitialState();
         mRK5 = problem.getInitialState();
         mAux = problem.getInitialState();
-        mMinimumStepAllowed = step/1.0e6;
+        mMinimumStepAllowed = Math.abs(step)/1.0e6;
     }
     
     public AdaptiveStepRKFehlbergMethod(InitialValueProblem problem, double step, double tolerance, Event event) {
@@ -59,7 +53,7 @@ public class AdaptiveStepRKFehlbergMethod extends AdaptiveStepMethod {
      */
     public double doStep(double deltaTime, double time, double[] state) throws ConvergenceException {
         double[] k1 = mProblem.getDerivative(time, state);
-        while (mCurrentStep>=mMinimumStepAllowed) {
+        while (Math.abs(mCurrentStep)>=mMinimumStepAllowed) {
             oneStep(time, state, k1);
             
             double error = 0;
@@ -68,7 +62,7 @@ public class AdaptiveStepRKFehlbergMethod extends AdaptiveStepMethod {
                 error += errorInIndex*errorInIndex;
             }
             error = Math.sqrt(error);
-            if (error<mTolerance*mCurrentStep) {
+            if (error<mTolerance*Math.abs(mCurrentStep)) {
                 for (int i=0; i<state.length; i++) {
                     state[i] = mRK5[i];
                 }
@@ -76,7 +70,7 @@ public class AdaptiveStepRKFehlbergMethod extends AdaptiveStepMethod {
                 // Adapt step
                 if (error<1.0e-10) mCurrentStep = 2*mCurrentStep;
                 else {
-                    double q = Math.pow((mTolerance*mCurrentStep)/(2.0*error),0.25);
+                    double q = Math.pow((mTolerance*Math.abs(mCurrentStep))/(2.0*error),0.25);
                     q = Math.min(4, Math.max(q, 0.1));
                     mCurrentStep *= q;
                 }
@@ -84,7 +78,7 @@ public class AdaptiveStepRKFehlbergMethod extends AdaptiveStepMethod {
                 return time;
             }
             // Try a new smaller step
-            double q = Math.pow((mTolerance*mCurrentStep)/(2.0*error),0.25);
+            double q = Math.pow((mTolerance*Math.abs(mCurrentStep))/(2.0*error),0.25);
             q = Math.min(4, Math.max(q, 0.1));
             mCurrentStep *= q;
             //System.out.println ("REJECTED: t = "+time+ " New step is "+mCurrentStep+ " error = "+error);

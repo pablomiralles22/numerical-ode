@@ -8,15 +8,16 @@ import es.um.mned.utils.Newton1D;
 
 public class FixedStepTrapezoidalNewton1DMethod extends FixedStepMethod {
 	
-	private static class 
+	protected static class 
 	Trapezoidal1DMethodExtendedEquation implements ExtendedStateFunction {
 
 		protected double t, x, h;
 		protected double derivative;
 		ExtendedInitialValueProblem ivp;
 		
-		public Trapezoidal1DMethodExtendedEquation(ExtendedInitialValueProblem ivp) {
+		public Trapezoidal1DMethodExtendedEquation(ExtendedInitialValueProblem ivp, double step) {
 			this.ivp = ivp;
+			h = step;
 		}
 
 		@Override
@@ -43,13 +44,6 @@ public class FixedStepTrapezoidalNewton1DMethod extends FixedStepMethod {
 			return 1 - h / 2. * (ivp.getDerivativeDY(t+h, new double[]{w} ))[0];
 		}
 		
-		public void changeParameters(double t, double x, double deltaTime, double derivative) {
-			this.t = t;
-			this.x = x;
-			this.h = deltaTime;
-			this.derivative = derivative;
-		}
-		
 	}
 	
 	Trapezoidal1DMethodExtendedEquation mEquation;
@@ -57,7 +51,7 @@ public class FixedStepTrapezoidalNewton1DMethod extends FixedStepMethod {
 
 	public FixedStepTrapezoidalNewton1DMethod(ExtendedInitialValueProblem problem, double step, double tolerance) {
 		super(problem, step);
-		mEquation = new Trapezoidal1DMethodExtendedEquation(problem);
+		mEquation = new Trapezoidal1DMethodExtendedEquation(problem, step);
 		mTolerance = tolerance;
 	}
 	
@@ -73,9 +67,10 @@ public class FixedStepTrapezoidalNewton1DMethod extends FixedStepMethod {
 
 	@Override
 	public double doStep(double deltaTime, double time, double[] state) throws ConvergenceException {
-		double[] derivative = mProblem.getDerivative(time, state);
+		mEquation.derivative = mProblem.getDerivative(time, state)[0];
+		mEquation.t = time;
+		mEquation.x = state[0];
 		
-		mEquation.changeParameters(time, state[0], deltaTime, derivative[0]);
 		state[0] = Newton1D.solve(mEquation, state[0], mTolerance);
         return time+deltaTime;
 	}

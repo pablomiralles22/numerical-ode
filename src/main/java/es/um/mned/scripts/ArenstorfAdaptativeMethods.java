@@ -31,9 +31,9 @@ public class ArenstorfAdaptativeMethods {
     
     public static void main(String[] args) throws ConvergenceException {
     	// Parameters
-        double hStep = 1.0e-2;
+        double hStep = -1.0e-2;
         double tolerance = 1.0e-8;
-        double maxT = ArenstorfOrbits.PERIOD * 2.3;
+        double maxT = -ArenstorfOrbits.PERIOD * 2.3;
         // Problem
         InitialValueProblem problem = new ArenstorfOrbits(
         		0.,
@@ -46,8 +46,8 @@ public class ArenstorfAdaptativeMethods {
         // Method
 //        FixedStepMethod method = new FixedStepPredictorCorrector4Method(problem,hStep, yCross);
 //        FixedStepMethod method = new AdaptiveStepPredictorCorrector4Method(problem,hStep, tolerance, yCross);
-        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance, yCross);
-//      		FixedStepMethod method = new AdaptiveStepRK4Method(problem,hStep, tolerance, yCross);
+//        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance, yCross);
+        FixedStepMethod method = new AdaptiveStepRK4Method(problem,hStep, tolerance, yCross);
 //        FixedStepMethod method = new FixedStepModifiedEulerMethod(problem,hStep, yCross);
         
         

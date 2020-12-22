@@ -32,7 +32,7 @@ public class AdaptiveStepEulerMethod extends AdaptiveStepMethod {
         mCurrentStep = step;
         mHalfStepState = problem.getInitialState();
         mFullStepState = problem.getInitialState();
-        mMinimumStepAllowed = step/1.0e6;
+        mMinimumStepAllowed = Math.abs(step)/1.0e6;
     }
     
     public AdaptiveStepEulerMethod(InitialValueProblem problem, double step, double tolerance, Event event) {
@@ -55,7 +55,7 @@ public class AdaptiveStepEulerMethod extends AdaptiveStepMethod {
      * @throws ConvergenceException 
      */
     public double doStep(double deltaTime, double time, double[] state) throws ConvergenceException {
-        while (mCurrentStep>=mMinimumStepAllowed) {
+        while (Math.abs(mCurrentStep)>=mMinimumStepAllowed) {
             double[] derivative = mProblem.getDerivative(time, state);
             double halfStep = mCurrentStep/2;
             for (int i=0; i<state.length; i++) {
@@ -70,7 +70,7 @@ public class AdaptiveStepEulerMethod extends AdaptiveStepMethod {
                 error += errorInIndex*errorInIndex;
             }
             error = Math.sqrt(error);
-            if (error<mTolerance*mCurrentStep) {
+            if (error<mTolerance*Math.abs(mCurrentStep)) {
                 for (int i=0; i<state.length; i++) {
                     //state[i] = mHalfStepState[i]; 
                     state[i] = 2*mHalfStepState[i] - mFullStepState[i];
@@ -79,16 +79,16 @@ public class AdaptiveStepEulerMethod extends AdaptiveStepMethod {
                 // Adapt step
                 if (error<1.0e-10) mCurrentStep = 2*mCurrentStep;
                 else {
-                    double q = 0.84*(mTolerance*mCurrentStep)/error;
+                    double q = 0.84*(mTolerance*Math.abs(mCurrentStep))/error;
                     mCurrentStep *= q;
                 }
                 //System.out.println ("ACCEPTED: t = "+time+ " New step is "+mCurrentStep+ " error = "+error);
                 return time;
             }
             // Try a new smaller step
-            double q = 0.84*(mTolerance*mCurrentStep)/error;
+            double q = 0.84*(mTolerance*Math.abs(mCurrentStep))/error;
             mCurrentStep *= q;
-            System.out.println ("REJECTED: t = "+time+ " New step is "+mCurrentStep+ " error = "+error);
+//            System.out.println ("REJECTED: t = "+time+ " New step is "+mCurrentStep+ " error = "+error);
         }
         throw new ConvergenceException("Adaptative Euler Method did not converge.");
 //        // Was not able to reach tolerance before going below mMinimumStepAllowed

@@ -34,7 +34,7 @@ public class AdaptiveStepRK4Method extends AdaptiveStepMethod {
         mHalfStepState = problem.getInitialState();
         mHalfStepCompleteState = problem.getInitialState();
         mFullStepState = problem.getInitialState();
-        mMinimumStepAllowed = step/1.0e6;
+        mMinimumStepAllowed = Math.abs(step)/1.0e6;
     }
     
     public AdaptiveStepRK4Method(InitialValueProblem problem, double step, double tolerance, Event event) {
@@ -57,7 +57,7 @@ public class AdaptiveStepRK4Method extends AdaptiveStepMethod {
      * @throws ConvergenceException 
      */
     public double doStep(double deltaTime, double time, double[] state) throws ConvergenceException {
-        while (mCurrentStep>=mMinimumStepAllowed) {
+        while (Math.abs(mCurrentStep) >= mMinimumStepAllowed) {
             double halfStep = mCurrentStep/2;
             oneStep(mCurrentStep, time,          state,          mFullStepState);
             oneStep(halfStep,     time,          state,          mHalfStepState);
@@ -69,7 +69,7 @@ public class AdaptiveStepRK4Method extends AdaptiveStepMethod {
                 error += errorInIndex*errorInIndex;
             }
             error = 16.0*Math.sqrt(error)/15.0;
-            if (error<mTolerance*mCurrentStep) {
+            if (error<mTolerance*Math.abs(mCurrentStep)) {
                 for (int i=0; i<state.length; i++) {
                     //state[i] = mHalfStepCompleteState[i]; 
                     state[i] = (16.0*mHalfStepCompleteState[i] - mFullStepState[i])/15.0;
@@ -78,7 +78,7 @@ public class AdaptiveStepRK4Method extends AdaptiveStepMethod {
                 // Adapt step
                 if (error<1.0e-10) mCurrentStep = 2*mCurrentStep;
                 else {
-                    double q = Math.pow((mTolerance*mCurrentStep)/(2.0*error),0.25);
+                    double q = Math.pow((mTolerance*Math.abs(mCurrentStep))/(2.0*error),0.25);
                     q = Math.min(4, Math.max(q, 0.1));
                     mCurrentStep *= q;
                 }
@@ -86,7 +86,7 @@ public class AdaptiveStepRK4Method extends AdaptiveStepMethod {
                 return time;
             }
             // Try a new smaller step
-            double q = Math.pow((mTolerance*mCurrentStep)/(2.0*error),0.25);
+            double q = Math.pow((mTolerance*Math.abs(mCurrentStep))/(2.0*error),0.25);
             q = Math.min(4, Math.max(q, 0.1));
             mCurrentStep *= q;
             // System.out.println ("REJECTED: t = "+time+ " New step is "+mCurrentStep+ " error = "+error);

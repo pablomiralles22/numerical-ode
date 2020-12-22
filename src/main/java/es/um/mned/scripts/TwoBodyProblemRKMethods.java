@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import es.um.mned.interpolation.HermiteInterpolator;
 import es.um.mned.interpolation.StateFunction;
+import es.um.mned.methods.AdaptiveStepEulerMethod;
 import es.um.mned.methods.AdaptiveStepMethod;
 import es.um.mned.methods.AdaptiveStepPredictorCorrector4Method;
 import es.um.mned.methods.AdaptiveStepRKFehlbergMethod;
@@ -49,10 +50,10 @@ public class TwoBodyProblemRKMethods {
 	
     public static void main(String[] args) {
     	// Parameters
-        double hStep = 10;
+        double hStep = -10;
         double tolerance = 1.0e-8;
         int maxYears = 10;
-        double tMax = maxYears * 365 * 24;
+        double tMax = -maxYears * 365 * 24;
         
         // Problem
         InitialValueProblem problem = new TwoBodyProblem(0., Arrays.copyOf(initState, initState.length));
@@ -60,10 +61,11 @@ public class TwoBodyProblemRKMethods {
         Event yCross = new YCross(false, tolerance);
 
         // Methods
-        FixedStepMethod method = new FixedStepModifiedEulerMethod(problem,hStep, yCross);
+//        FixedStepMethod method = new FixedStepModifiedEulerMethod(problem,hStep, yCross);
 //        FixedStepMethod method = new FixedStepPredictorCorrector4Method(problem,hStep,yCross);
+//        FixedStepMethod method = new AdaptiveStepEulerMethod(problem,hStep, tolerance, yCross);
 //        FixedStepMethod method = new AdaptiveStepPredictorCorrector4Method(problem,hStep, tolerance, yCross);
-//        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance, yCross);
+        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance, yCross);
         
         
         

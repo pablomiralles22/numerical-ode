@@ -9,12 +9,6 @@ import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.utils.ConvergenceException;
 
-/**
- * Fixed Step Euler Method
- * 
- * @author F. Esquembre
- * @version September 2020
- */
 public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
     static public final int sSTEPS = 4;
 
@@ -41,7 +35,7 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
         super(problem,step);
         super.setTolerance(tolerance);
         mCurrentStep = step;
-        mMinimumStepAllowed = step/1.0e6;
+        mMinimumStepAllowed = Math.abs(step)/1.0e6;
         mPredictorState = problem.getInitialState();
         mCorrectorState = problem.getInitialState();
         for (int i=0; i<mStates.length; i++) mStates[i] = problem.getInitialState();
@@ -76,7 +70,7 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
             return time + deltaTime;
         }
         // GENERATE NEW POINTS
-        while (mCurrentStep>=mMinimumStepAllowed) {
+        while (Math.abs(mCurrentStep)>=mMinimumStepAllowed) {
             double h24 = mCurrentStep/24.0;
             double currentTime=time;
             double[] currentState=state;
@@ -103,7 +97,7 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
             }
             norm = Math.sqrt(norm);
             double error = 19.0 * norm / 270.0;
-            double maxErrorAllowed = mTolerance * mCurrentStep;
+            double maxErrorAllowed = mTolerance * Math.abs(mCurrentStep);
             if (error < maxErrorAllowed) { // ACCEPT
                 time = currentTime + mCurrentStep;
                 
