@@ -3,6 +3,7 @@ package es.um.mned.methods;
 import es.um.mned.interpolation.ExtendedStateFunction;
 import es.um.mned.ode.Event;
 import es.um.mned.ode.ExtendedInitialValueProblem;
+import es.um.mned.utils.ConvergenceException;
 import es.um.mned.utils.Newton1D;
 
 public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
@@ -72,14 +73,9 @@ public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
     }
 
 	@Override
-	public double doStep(double deltaTime, double time, double[] state) {
+	public double doStep(double deltaTime, double time, double[] state) throws ConvergenceException {
 		mEquation.changeParameters(time, state[0], deltaTime);
-        try {
-			state[0] = Newton1D.solve(mEquation, state[0]);
-		} catch (Exception e) {
-			System.out.println("Newton didn't converge in BackwardsEuler");
-			return Double.NaN;
-		}
+		state[0] = Newton1D.solve(mEquation, state[0]);
         return time+deltaTime;
 	}
 

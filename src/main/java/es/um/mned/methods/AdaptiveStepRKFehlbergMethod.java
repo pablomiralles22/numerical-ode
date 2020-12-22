@@ -8,6 +8,7 @@ package es.um.mned.methods;
 
 import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
+import es.um.mned.utils.ConvergenceException;
 
 /**
  * Fixed Step Euler Method
@@ -54,8 +55,9 @@ public class AdaptiveStepRKFehlbergMethod extends AdaptiveStepMethod {
      * @param time the current time
      * @param state the current state
      * @return the value of time of the step taken, state will contain the updated state
+     * @throws ConvergenceException 
      */
-    public double doStep(double deltaTime, double time, double[] state) {
+    public double doStep(double deltaTime, double time, double[] state) throws ConvergenceException {
         double[] k1 = mProblem.getDerivative(time, state);
         while (mCurrentStep>=mMinimumStepAllowed) {
             oneStep(time, state, k1);
@@ -87,8 +89,9 @@ public class AdaptiveStepRKFehlbergMethod extends AdaptiveStepMethod {
             mCurrentStep *= q;
             //System.out.println ("REJECTED: t = "+time+ " New step is "+mCurrentStep+ " error = "+error);
         }
-        // Was not able to reach tolerance before going below mMinimumStepAllowed
-        return Double.NaN; 
+        throw new ConvergenceException("Adaptative Runge-Kutta-Fehlberg Method did not converge.");
+//        // Was not able to reach tolerance before going below mMinimumStepAllowed
+//        return Double.NaN; 
     }
     
     

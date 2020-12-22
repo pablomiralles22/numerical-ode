@@ -34,6 +34,7 @@ public class NumericalSolution implements StateFunction{
     	NumericalSolution extrapolatedSol = new NumericalSolution();
     	extrapolatedSol.ivp = other.ivp;
     	extrapolatedSol.order = other.order;
+    	extrapolatedSol.interpolators = new HashMap<>();
     	return extrapolatedSol;
     }
    
@@ -181,19 +182,43 @@ public class NumericalSolution implements StateFunction{
 	   	return getInterpolator(l).getState(t, index);
    }
    
+   /*
+    * Returns max error given analytical solution and indexes to compare
+    */
+   public double getMaxError(StateFunction analyticalSolution, int[] inds) {
+   	double err = pointList.stream()
+	    	.map(p -> {
+	    		double aux = 0.0;
+	    		double[] state = p.getState();
+	    		double t = p.getTime();
+	    		for(int i=0; i < inds.length; ++i) {
+	    			double diff = (state[inds[i]] - analyticalSolution.getState(t, inds[i]));
+	    			aux += diff*diff;
+	    		}
+	    		return aux;
+	    	})
+	    	.max(Double::compare)
+	    	.get();
+   	return Math.sqrt(err);
+   }
+   
     /*
      * Returns max error given analytical solution
      */
     public double getMaxError(StateFunction analyticalSolution) {
-    	double err = 0.0;
-    	for(NumericalSolutionPoint p : pointList) {
-    		double currentErr = 0.0;
-    		for(int i=0; i < p.getState().length; ++i) {
-    			double diff = (p.getState(i) - analyticalSolution.getState(p.getTime(), i));
-    			currentErr += diff*diff;
-    		}
-    		err = Math.max(err, currentErr);
-    	}
+    	double err = pointList.stream()
+	    	.map(p -> {
+	    		double aux = 0.0;
+	    		double[] state = p.getState();
+	    		double t = p.getTime();
+	    		for(int i=0; i < state.length; ++i) {
+	    			double diff = (state[i] - analyticalSolution.getState(t, i));
+	    			aux += diff*diff;
+	    		}
+	    		return aux;
+	    	})
+	    	.max(Double::compare)
+	    	.get();
     	return Math.sqrt(err);
     }
     

@@ -7,24 +7,37 @@ import es.um.mned.utils.*;
 
 public class ImplicitMethodsRigid1D {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
+		// Params
 		double maxTime = 8;
 		double tolerance = 1e-10;
-        ExtendedInitialValueProblem problem = new Rigid1D(0., new double[] {-1});
-        double hStep = 1e-5;
-        // FixedStepMethod method = new BackwardsEulerNewton1DMethod(problem,hStep, tolerance);
-        FixedStepMethod method = new FixedStepTrapezoidalNewton1DMethod(problem, hStep, tolerance);
-        //method = new FixedStepPredictorCorrector4Method(problem,10);
-        //method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance);
+		double hStep = 1e-5;
+		
+		double t0 = 0.;
+		double[] x0 = new double[] {-1};
+		
+		// Problem
+        ExtendedInitialValueProblem problem = new Rigid1D(t0, x0);
         
-        double lastTime = method.solve(maxTime).getLastPoint().getTime();
-        if (Double.isNaN(lastTime)) {
-            System.out.println ("Method broke!");
-        }
-        // DisplaySolution.listError(method.getSolution(), new Rigid1D.TrueSol(), new int[]{0});
+        // Methods
+//        FixedStepMethod method = new FixedStepBackwardsEulerNewton1DMethod(problem,hStep, tolerance);
+        FixedStepMethod method = new FixedStepTrapezoidalNewton1DMethod(problem, hStep, tolerance);
+//        FixedStepMethod method = new FixedStepPredictorCorrector4Method(problem,10);
+//        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance);
+        
+        try {
+			method.solve(maxTime);
+		} catch (ConvergenceException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+
+        // Get max error using analytical solution
         double err = method.getSolution().getMaxError(new Rigid1D.TrueSol());
         System.out.println("Error = " + err);
+        // Plot steps if adaptative
         if (method instanceof AdaptiveStepMethod) DisplaySequence.plot(((AdaptiveStepMethod) method).getSolution().getStepList());
+        // Print number of evaluations
         System.out.println ("Evaluations = "+problem.getEvaluationCounter());
 	}
 }

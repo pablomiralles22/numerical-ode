@@ -7,6 +7,7 @@ package es.um.mned.methods;
 
 import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
+import es.um.mned.utils.ConvergenceException;
 
 /**
  * Fixed Step Euler Method
@@ -67,8 +68,9 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
      * @param time the current time
      * @param state the current state
      * @return the value of time of the step taken, state will contain the updated state
+     * @throws ConvergenceException 
      */
-    public double doStep(double deltaTime, double time, double[] state) {
+    public double doStep(double deltaTime, double time, double[] state) throws ConvergenceException {
         if(queueTop >= 0) { // QUEUED STEPS
             System.arraycopy(queue[queueTop--], 0, state, 0, state.length);
             return time + deltaTime;
@@ -142,8 +144,9 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
             //System.out.println ("REJECTED: t = "+time+ " New step is "+mCurrentStep+ " error = "+error);
             mMustRestart = true;
         }
-        // Was not able to reach tolerance before going below mMinimumStepAllowed
-        return Double.NaN; 
+        throw new ConvergenceException("Adaptative Predictor Corrector Method did not converge.");
+//        // Was not able to reach tolerance before going below mMinimumStepAllowed
+//        return Double.NaN; 
     }
 
     protected void restartMethod(double time, double[] state) {

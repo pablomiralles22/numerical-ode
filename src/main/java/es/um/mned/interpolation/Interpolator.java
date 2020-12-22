@@ -58,7 +58,8 @@ public class Interpolator implements StateFunction {
         }
 
         for(int i=0; i<n; ++i)
-            coeffs[i] = Arrays.copyOf(dd[i][i], dim);
+        	System.arraycopy(dd[i][i], 0, coeffs[i], 0, dim);
+//            coeffs[i] = Arrays.copyOf(dd[i][i], dim);
     }
 
     public double getState(double t, int index) {

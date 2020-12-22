@@ -78,8 +78,9 @@ abstract public class FixedStepMethod {
      * @param time the current time
      * @param state the current state
      * @return the value of time of the step taken, state will contain the updated state
+     * @throws ConvergenceException 
      */
-    abstract public double doStep(double deltaTime, double time, double[] state);
+    abstract public double doStep(double deltaTime, double time, double[] state) throws ConvergenceException;
     
     /**
      * Get the step
@@ -118,10 +119,10 @@ abstract public class FixedStepMethod {
         }
     }
 
-    private void checkEvent() throws ConvergenceException {
-        if(event == null) return;
+    private boolean checkEvent() throws ConvergenceException {
+        if(event == null) return false;
         int size = mSolution.getSize();
-        if(size <= 1) return;
+        if(size <= 1) return false;
 
         NumericalSolutionPoint p1 = mSolution.get(size-2);
         NumericalSolutionPoint p2 = mSolution.get(size-1);
@@ -141,28 +142,31 @@ abstract public class FixedStepMethod {
                     0
                     );
             event.crossAction(zero, interpolator.getState(zero));
+            return true;
         }
-
+        return false;
     }
 
-    protected double solveUpTo(double t) throws ConvergenceException {
+    protected double solveUpTo(double maxTime) throws ConvergenceException {
         NumericalSolutionPoint lastPoint = mSolution.getLastPoint();
         double time = lastPoint.getTime();
         double[] state = lastPoint.getState();
         if (mStep > 0) {
-            while (time < t) {
+            while (time < maxTime) {
                 time = doStep(mStep,time,state);
                 if (Double.isNaN(time)) return Double.NaN;
                 mSolution.add(time, state);
-                checkEvent();
+                if(checkEvent() && event.isBlocking())
+                	break;
             }
         } 
         else if (mStep < 0) {
-            while (time>t) {
+            while (time > maxTime) {
                 time = doStep(mStep,time,state);
                 if (Double.isNaN(time)) return Double.NaN;
                 mSolution.add(time, state);
-                checkEvent();
+                if(checkEvent() && event.isBlocking())
+                	break;
             }
         }
         return time;
@@ -181,7 +185,7 @@ abstract public class FixedStepMethod {
         time = doStep(mStep,time,state);
         if (Double.isNaN(time)) return null;
         NumericalSolutionPoint point = mSolution.add(time, state);
-        checkEvent();
+        checkEvent(); // No need to check if blocking
         return point;
     }
     

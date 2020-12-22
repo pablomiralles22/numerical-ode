@@ -5,17 +5,8 @@
  */
 package es.um.mned.problems;
 
-import java.util.Arrays;
-import es.um.mned.interpolation.StateFunction;
-import es.um.mned.interpolation.*;
-import es.um.mned.methods.*;
 import es.um.mned.ode.*;
-import es.um.mned.utils.*;
 
-/**
- *
- * @author paco
- */
 public class TwoBodyProblem extends InitialValueProblem {
 
 	static private double sG = 8.6498928e-4;

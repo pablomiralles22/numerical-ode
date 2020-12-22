@@ -16,7 +16,7 @@ public class Newton1D {
 			ExtendedStateFunction f,
 			double start,
 			double tol
-			) throws Exception {
+			) throws ConvergenceException {
 		double x = start;
 		
 		for(int i = 0; i < MAX_IT; ++i) {
@@ -26,13 +26,13 @@ public class Newton1D {
 			x = next;
 		}
 		
-		throw new Exception("Newton method did not converge.");
+		throw new ConvergenceException("Newton method did not converge.");
 	}
 	
 	public static double solve(
 			ExtendedStateFunction f,
 			double start
-			) throws Exception {
+			) throws ConvergenceException {
 		return solve(f, start, DEFAULT_TOL);
 	}
 	

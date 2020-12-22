@@ -1,6 +1,5 @@
 package es.um.mned.ode;
 
-import es.um.mned.interpolation.StateFunction;
 
 public abstract class Event {
 	
