@@ -9,6 +9,9 @@ import es.um.mned.methods.FixedStepTrapezoidalNewton1DMethod.Trapezoidal1DMethod
 
 public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
 	
+	/**
+	 * Auxiliar class to use in Newton method
+	 */
 	protected static class 
 	BDF1DMethodExtendedEquation implements ExtendedStateFunction {
 
@@ -64,15 +67,27 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
 		
 	}
 	
+	/*
+	 * ========================================
+	 * Attributes
+	 * ========================================
+	 */
 	BDF1DMethodExtendedEquation mEquation;
     Trapezoidal1DMethodExtendedEquation startEquation;
     int order;
     int startSteps;
 	double mTolerance;
+	
+	/*
+	 * ========================================
+	 * Constructors
+	 * ========================================
+	 */
 
 	/**
 	 * @param problem InitialValueProblem that implements partial derivative of y
-	 * @param order Order of the BDF method, between 1 and 6.
+	 * @param order Order of the BDF method, between 2 and 6. Order 1 is 
+	 * 	implemented elsewhere (Backwards Euler)
 	 * @param step Size of the steps to take
 	 * @param tolerance Tolerance for Newton method to solve the equation
 	 */
@@ -97,7 +112,7 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
                 break;
             case 3:
                 a = new double[] {-18./11., 9./11., -2./11.};
-                b = 11./6.;
+                b = 6./11.;
                 break;
             case 4:
                 a = new double[] {-48./25., 36./25., -16./25., 3./25.};
@@ -115,12 +130,15 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
             	throw new IllegalArgumentException("Order not available.");
         }
 		mEquation = new BDF1DMethodExtendedEquation(problem, step, a, b);
-		// this kills BDFs of order >= 3, but I don't have better implicit methods.
+		// this kills BDFs of order > 3, but I don't have better implicit methods.
+		// if I had them I would initialize the first points and startEquation inside the switch.
+		// Order 3 still works well because error in each trapezoidal step has O(h^3) error
         startEquation = new Trapezoidal1DMethodExtendedEquation(problem, step); 
 
 		mTolerance = tolerance;
 	}
 	
+
 	/**
 	 * @param problem InitialValueProblem that implements partial derivative of y
 	 * @param order Order of the BDF method, between 1 and 6.
@@ -139,6 +157,12 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
 		super.setEvent(event);
 	}
 	
+	/*
+	 * ========================================
+	 * Step and order
+	 * ========================================
+	 */
+	
 	@Override
     public int getOrder() {
     	return order;
@@ -146,7 +170,7 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
 
 	@Override
 	public double doStep(double deltaTime, double time, double[] state) throws ConvergenceException {
-        if(startSteps > 0) {
+        if(startSteps > 0) { // method start
         	mEquation.states[--startSteps] = state[0];
             startEquation.derivative = mProblem.getDerivative(time, state)[0];
             startEquation.t = time;

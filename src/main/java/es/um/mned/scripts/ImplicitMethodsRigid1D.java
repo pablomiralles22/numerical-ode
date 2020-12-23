@@ -22,7 +22,7 @@ public class ImplicitMethodsRigid1D {
         // Methods
 //        FixedStepMethod method = new FixedStepBackwardsEulerNewton1DMethod(problem,hStep, tolerance);
 //        FixedStepMethod method = new FixedStepTrapezoidalNewton1DMethod(problem, hStep, tolerance);
-        FixedStepMethod method = new FixedStepBDFNewton1DMethod(problem, 5, hStep, tolerance);
+        FixedStepMethod method = new FixedStepBDFNewton1DMethod(problem, 3, hStep, tolerance);
 //        FixedStepMethod method = new FixedStepPredictorCorrector4Method(problem,10);
 //        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance);
         

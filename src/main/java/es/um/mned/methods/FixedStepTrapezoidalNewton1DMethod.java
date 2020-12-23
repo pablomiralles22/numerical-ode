@@ -8,6 +8,9 @@ import es.um.mned.utils.Newton1D;
 
 public class FixedStepTrapezoidalNewton1DMethod extends FixedStepMethod {
 	
+	/**
+	 * Auxiliar class to use in Newton method
+	 */
 	protected static class 
 	Trapezoidal1DMethodExtendedEquation implements ExtendedStateFunction {
 
@@ -46,8 +49,20 @@ public class FixedStepTrapezoidalNewton1DMethod extends FixedStepMethod {
 		
 	}
 	
+	/*
+	 * ========================================
+	 * Attributes
+	 * ========================================
+	 */
+	
 	Trapezoidal1DMethodExtendedEquation mEquation;
 	double mTolerance;
+	
+	/*
+	 * ========================================
+	 * Constructors
+	 * ========================================
+	 */
 
 	public FixedStepTrapezoidalNewton1DMethod(ExtendedInitialValueProblem problem, double step, double tolerance) {
 		super(problem, step);
@@ -59,6 +74,12 @@ public class FixedStepTrapezoidalNewton1DMethod extends FixedStepMethod {
 		this(problem, step, tolerance);
 		super.setEvent(event);
 	}
+	
+	/*
+	 * ========================================
+	 * Step and order
+	 * ========================================
+	 */
 	
 	@Override
     public int getOrder() {

@@ -8,6 +8,9 @@ import es.um.mned.utils.Newton1D;
 
 public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
 	
+	/**
+	 * Auxiliar class to use in Newton method
+	 */
 	protected static class 
 	BackwardsEuler1DMethodExtendedEquation implements ExtendedStateFunction {
 
@@ -47,8 +50,20 @@ public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
 		
 	}
 	
+	/*
+	 * ========================================
+	 * Attributes
+	 * ========================================
+	 */
+	
 	BackwardsEuler1DMethodExtendedEquation mEquation;
 	double mTolerance;
+	
+	/*
+	 * ========================================
+	 * Constructors
+	 * ========================================
+	 */
 
 	public FixedStepBackwardsEulerNewton1DMethod(ExtendedInitialValueProblem problem, double step, double tolerance) {
 		super(problem, step);
@@ -61,6 +76,11 @@ public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
 		super.setEvent(event);
 	}
 	
+	/*
+	 * ========================================
+	 * Step and order
+	 * ========================================
+	 */
     
     @Override
     public int getOrder() {
