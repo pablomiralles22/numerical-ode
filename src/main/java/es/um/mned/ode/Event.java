@@ -3,16 +3,14 @@ package es.um.mned.ode;
 
 public abstract class Event {
 	
-	private boolean blocking;
 	private double tolerance;
 	
-	public Event(boolean blocking, double tolerance) {
-		this.blocking = blocking;
+	public Event(double tolerance) {
 		this.tolerance = tolerance;
 	}
-
-	public boolean isBlocking() {
-		return blocking;
+	
+	public Event() {
+		this(0.);
 	}
 
 	public double getTolerance() {
@@ -22,5 +20,7 @@ public abstract class Event {
 	public abstract double crossFunction(double time, double[] state);
 	
 	public abstract void crossAction(double time, double[] state);
+	
+	public abstract boolean stopCondition();
 
 }

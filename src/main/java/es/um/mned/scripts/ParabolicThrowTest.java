@@ -44,8 +44,8 @@ public class ParabolicThrowTest {
 	
     private static class YCross extends Event {
 
-		public YCross(boolean blocking, double tolerance) {
-			super(blocking, tolerance);
+		public YCross(double tolerance) {
+			super(tolerance);
 		}
 
 		@Override
@@ -62,6 +62,11 @@ public class ParabolicThrowTest {
 			System.out.println("Relative error: " + relError);
 			System.out.println("=============================");
 		}
+
+		@Override
+		public boolean stopCondition() {
+			return false;
+		}
     	
     }
 	
@@ -75,7 +80,7 @@ public class ParabolicThrowTest {
         InitialValueProblem problem = 
         		new ParabolicThrowWithFriction(t0, new double[] { x0, vx0, y0, vy0 }, frictionCoefficient);
         // Event
-        Event yCross = new YCross(true, zeroTol);
+        Event yCross = new YCross(zeroTol);
         // Method
         FixedStepMethod method = new FixedStepEulerMethod(problem, hStep, yCross);
         // Analytical sol

@@ -17,9 +17,12 @@ public class TwoBodyProblemRKMethods {
 	private static double[] initState = new double[] { 152.100533, 0.0 , 0.0, 0.105444 }; // x,vx,y,vy
     
     private static class YCross extends Event {
+    	
+    	private int loopCount;
 
-		public YCross(boolean blocking, double tolerance) {
-			super(blocking, tolerance);
+		public YCross(double tolerance) {
+			super(tolerance);
+			loopCount = 0;
 		}
 
 		@Override
@@ -36,6 +39,12 @@ public class TwoBodyProblemRKMethods {
 			System.out.println("Hour: " + (int)(time) % 24);
 			System.out.println("Time: " + time);
 			System.out.println("=============================");
+			loopCount++;
+		}
+		
+		@Override
+		public boolean stopCondition() {
+			return loopCount >= 20;
 		}
     	
     }
@@ -44,13 +53,13 @@ public class TwoBodyProblemRKMethods {
     	// Parameters
         double hStep = -10;
         double tolerance = 1.0e-8;
-        int maxYears = 10;
+        int maxYears = 12;
         double tMax = -maxYears * 365 * 24;
         
         // Problem
         InitialValueProblem problem = new TwoBodyProblem(0., Arrays.copyOf(initState, initState.length));
         // Event
-        Event yCross = new YCross(false, tolerance);
+        Event yCross = new YCross(tolerance);
 
         // Methods
 //        FixedStepMethod method = new FixedStepModifiedEulerMethod(problem,hStep, yCross);

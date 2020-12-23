@@ -27,8 +27,8 @@ public class SHOEulerMethod {
     	
     	private Vector<Double> zeros;
 
-		public XCross(boolean blocking, double tolerance) {
-			super(blocking, tolerance);
+		public XCross() {
+			super();
 			zeros = new Vector<>();
 		}
 
@@ -44,6 +44,11 @@ public class SHOEulerMethod {
 			System.out.println("Time: " + time);
 			System.out.println("=============================");
 			zeros.addElement(time);
+		}
+		
+		@Override
+		public boolean stopCondition() {
+			return false;
 		}
 		
 		public double getFrequency() {
@@ -71,7 +76,7 @@ public class SHOEulerMethod {
         StateFunction sol = shoProblem.getTrueSol();
         
         // Event
-        XCross xCross = new XCross(false, 1e-8);
+        XCross xCross = new XCross();
 
     	// -----------------------------------
 

@@ -10,8 +10,8 @@ public class ArenstorfAdaptativeMethods {
 
     private static class YCross extends Event {
 
-		public YCross(boolean blocking, double tolerance) {
-			super(blocking, tolerance);
+		public YCross(double tolerance) {
+			super(tolerance);
 		}
 
 		@Override
@@ -25,6 +25,11 @@ public class ArenstorfAdaptativeMethods {
 			System.out.println("X coordenate: " + state[0]);
 			System.out.println("Time: " + time);
 			System.out.println("=============================");
+		}
+
+		@Override
+		public boolean stopCondition() {
+			return false;
 		}
     	
     }
@@ -41,7 +46,7 @@ public class ArenstorfAdaptativeMethods {
         		);
         
         // Event
-        Event yCross = new YCross(false, tolerance);
+        Event yCross = new YCross(tolerance);
         
         // Method
 //        FixedStepMethod method = new FixedStepPredictorCorrector4Method(problem,hStep, yCross);

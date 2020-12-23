@@ -158,7 +158,7 @@ abstract public class FixedStepMethod {
                 time = doStep(mStep,time,state);
                 if (Double.isNaN(time)) return Double.NaN;
                 mSolution.add(time, state);
-                if(checkEvent() && event.isBlocking())
+                if(checkEvent() && event.stopCondition())
                 	break;
             }
         } 
@@ -167,7 +167,7 @@ abstract public class FixedStepMethod {
                 time = doStep(mStep,time,state);
                 if (Double.isNaN(time)) return Double.NaN;
                 mSolution.add(time, state);
-                if(checkEvent() && event.isBlocking())
+                if(checkEvent() && event.stopCondition())
                 	break;
             }
         }
