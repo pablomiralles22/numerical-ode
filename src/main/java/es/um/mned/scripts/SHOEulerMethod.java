@@ -9,7 +9,14 @@ import es.um.mned.utils.ConvergenceException;
 import es.um.mned.utils.DisplaySolution;
 
 public class SHOEulerMethod {
+	
+    static private double l = 0.7;
+    static private double m = 1.0;
+    static private double k = 1.5;
 
+    static private double b = 0.; // 0.3
+    static private double amp = 0.; // 0.4
+    static private double freq = 1.3; // 2.4
     
     static private double Xo = 1.5;
     static private double Vo = 0;
@@ -23,10 +30,14 @@ public class SHOEulerMethod {
 
     	
     	// Problem
-        SimpleHarmonicOscillator shoProblem = new SimpleHarmonicOscillator(0., new double[] {Xo, Vo});
+        SimpleHarmonicOscillator shoProblem = new SimpleHarmonicOscillator(
+                0., new double[] {Xo, Vo},
+                l, m, k,
+                b, amp, freq
+                );
         
         // Analytical sol
-        StateFunction sol = new SimpleHarmonicOscillator.TrueSol();
+        StateFunction sol = shoProblem.getTrueSol();
 
     	// -----------------------------------
 

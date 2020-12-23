@@ -13,19 +13,27 @@ import es.um.mned.ode.*;
  * @author paco
  */
 public class SimpleHarmonicOscillator extends InitialValueProblem {
-    static private double l = 0.7;
-    static private double m = 1.0;
-    static private double k = 1.5;
+    private double l = 0.7;
+    private double m = 1.0;
+    private double k = 1.5;
 
-    static private double b = 0.; // 0.3
-    static private double amp = 0.; // 0.4
-    static private double freq = 1.3; // 2.4
+    private double b = 0.; // 0.3
+    private double amp = 0.; // 0.4
+    private double freq = 1.3; // 2.4
     
-    static private double Xo = 1.5;
-    static private double Vo = 0;
+    private double Xo = 1.5;
+    private double Vo = 0;
     
-    public SimpleHarmonicOscillator(double t0, double[] x0) {
+    public SimpleHarmonicOscillator(
+            double t0, double[] x0,
+            double l, double m, double k,
+            double b, double amp, double freq
+            ) {
     	super(t0, x0);
+        Xo = x0[0];
+        Vo = x0[1];
+        this.l = l; this.m = m; this.k = k;
+        this.b = b; this.amp = amp; this. freq = freq;
     }
     
     private double force(double time) {
@@ -49,12 +57,14 @@ public class SimpleHarmonicOscillator extends InitialValueProblem {
     // ------------------
 
     
-    static public class TrueSol implements StateFunction {
-            static double Fo = Math.sqrt(k/m);
+    private class TrueSol implements StateFunction {
+            double Fo = Math.sqrt(k/m);
             
             public double[] getState(double time) {
-                return new double[] { (Xo-l)*Math.cos(Fo*time) + l, 
-                                      -Fo*(Xo-l)*Math.sin(Fo*time) };
+                return new double[] { 
+                    (Xo-l)*Math.cos(Fo*time) + l, 
+                    -Fo*(Xo-l)*Math.sin(Fo*time)
+                };
             }
             public double getState(double time, int index) {
                 switch (index) {
@@ -63,9 +73,11 @@ public class SimpleHarmonicOscillator extends InitialValueProblem {
                     default : return Double.NaN;
                 }
             }
-                
 
     }
-    
+
+    public StateFunction getTrueSol() {
+        return new TrueSol();
+    }
 
 }

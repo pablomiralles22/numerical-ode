@@ -34,8 +34,4 @@ public class ArenstorfOrbits extends InitialValueProblem {
         };
     }
     
-    // ------------------
-    // End of implementation of InitialValueProblem
-    // ------------------
-
 }
