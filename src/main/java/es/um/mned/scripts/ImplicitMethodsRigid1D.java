@@ -3,7 +3,6 @@ package es.um.mned.scripts;
 import es.um.mned.methods.*;
 import es.um.mned.ode.*;
 import es.um.mned.problems.Rigid1D;
-import es.um.mned.utils.*;
 
 public class ImplicitMethodsRigid1D {
 

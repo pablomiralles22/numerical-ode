@@ -6,70 +6,26 @@
 package es.um.mned.utils;
 
 import java.util.Iterator;
+import java.util.stream.IntStream;
+
 import org.opensourcephysics.frames.PlotFrame; 
 import org.opensourcephysics.controls.AbstractAnimation;
 import org.opensourcephysics.controls.AnimationControl;
 import javax.swing.JFrame;
 import es.um.mned.ode.NumericalSolution;
 import es.um.mned.ode.NumericalSolutionPoint;
-import es.um.mned.interpolation.StateFunction;
 import org.opensourcephysics.display.Dataset;
 
-/**
- *
- * @author F. Esquembre
- * @version September 2020
- */
+
 public class DisplaySolution {
-    
-    static public void listError(NumericalSolution solution, 
-                                 StateFunction trueSolution,
-                                 int[] indexes) {
-        listError(solution.iterator(),trueSolution, indexes);
-    }
-    
-    static public void listError(NumericalSolution solution, 
-                                 StateFunction trueSolution,
-                                 int[] indexes, int numberOfPoints) {
-        listError(solution.iterator(numberOfPoints),trueSolution, indexes);
-    }
+	private static final int MAX_POINTS = 10000;
 
-//    static public double maximumError(NumericalSolution solution, 
-//                                    StateFunction trueSolution,
-//                                    int[] indexes) {
-//        return maximumError(solution.iterator(),trueSolution, indexes);
-//    }
-//    
-//    static private double maximumError(Iterator<NumericalSolutionPoint> iterator, StateFunction trueSolution, int[] indexes) {
-//        double maxError = 0.0;
-//        while (iterator.hasNext()) {
-//            NumericalSolutionPoint point = iterator.next();
-//            double[] trueState = trueSolution.getState(point.getTime());
-//            double error = 0;
-//            for (int i=0; i<indexes.length;i++) {
-//                error += Math.abs(point.getState(indexes[i])-trueState[indexes[i]]);
-//            }
-//            maxError = Math.max(maxError, error);
-//        }
-//        return maxError;
-//    }
-
-    static private double listError(Iterator<NumericalSolutionPoint> iterator, StateFunction trueSolution, int[] indexes) {
-        double maxError = 0.0;
-        while (iterator.hasNext()) {
-            NumericalSolutionPoint point = iterator.next();
-            double[] trueState = trueSolution.getState(point.getTime());
-            System.out.print("time="+point.getTime());
-            double error = 0;
-            for (int i=0; i<indexes.length;i++) {
-                System.out.print(", x["+indexes[i]+"]="+point.getState(indexes[i])+", vs "+trueState[indexes[i]]);
-                error += Math.abs(point.getState(indexes[i])-trueState[indexes[i]]);
-            }
-            maxError = Math.max(maxError, error);
-            System.out.println(", error = "+error);
-        }
-        return maxError;
-    }
+	
+	/*
+	 * ===================================================
+	 * Lists
+	 * ===================================================
+	 */
 
     static public void list(NumericalSolution solution, int[] indexes) {
         Iterator<NumericalSolutionPoint> iterator = solution.iterator();
@@ -82,22 +38,27 @@ public class DisplaySolution {
             System.out.println();
         }
     }
-    
-    
 
+    /*
+	 * ===================================================
+	 * Time plotting
+	 * ===================================================
+	 */
+    
     static public void timePlot(NumericalSolution solution) {
-        timePlot(solution, 0);
+    	int skip = Math.max(solution.getSize() / MAX_POINTS - 1, 0);
+        timePlot(solution, skip);
     }
     
     static public void timePlot(NumericalSolution solution, int skip) {
         int dimension = solution.get(0).getState().length;
-        int[] indexes = new int[dimension];
-        for (int i=0; i<dimension; i++) indexes[i] = i;
+        int[] indexes = IntStream.range(0, dimension).toArray();
         timePlot(solution, indexes,skip);
     }
     
     static public void timePlot(NumericalSolution solution, int[] indexes) {
-        timePlot(solution, indexes, 0);
+    	int skip = Math.max(solution.getSize() / MAX_POINTS - 1, 0);
+        timePlot(solution, indexes, skip);
     }
     
     static public void timePlot(NumericalSolution solution, int[] indexes, int skip) {
@@ -105,23 +66,28 @@ public class DisplaySolution {
         frame.setConnected(true); // sets default to connect dataset points
         frame.setSize(800,600);
         for (int i=0; i<indexes.length;i++) {
-            int index=0;
             frame.setMarkerShape(i, Dataset.NO_MARKER);
             //frame.setMarkerColor(0,java.awt.Color.RED);
             frame.setXYColumnNames (i , "time" ,"x["+i+"]") ; // sets names for each dataset
-            Iterator<NumericalSolutionPoint> iterator = solution.iterator();
-            while (iterator.hasNext()) {
-                NumericalSolutionPoint point = iterator.next();
-                index++;
-                if (skip==0 || index%skip == 0) frame.append(i, point.getTime(), point.getState(indexes[i]));
+            
+            for(int j=0; j < solution.getSize(); j += skip+1) {
+            	NumericalSolutionPoint point = solution.get(j);
+            	frame.append(i, point.getTime(), point.getState(indexes[i]));
             }
         }
         frame.setVisible ( true ) ;
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE) ;
     }
     
+    /*
+	 * ===================================================
+	 * State plotting
+	 * ===================================================
+	 */
+    
     static public void statePlot(NumericalSolution solution, int index1, int index2) {
-        statePlot(solution, index1, index2, 0);
+    	int skip = Math.max(solution.getSize() / MAX_POINTS - 1, 0);
+        statePlot(solution, index1, index2, skip);
     }
     
     static public void statePlot(NumericalSolution solution, int index1, int index2, int skip) {
@@ -131,20 +97,21 @@ public class DisplaySolution {
         frame.setMarkerShape(0, Dataset.NO_MARKER);
         frame.setMarkerColor(0,java.awt.Color.BLUE);
         frame.setXYColumnNames (0 , "x["+index1+"]" , "x["+index2+"]") ; // sets names for each dataset
-        Iterator<NumericalSolutionPoint> iterator = solution.iterator();
-        int index=0;
-        NumericalSolutionPoint point=null;
-        while (iterator.hasNext()) {
-            point = iterator.next();
-            if (skip==0 || index%skip == 0) frame.append(0, point.getState(index1), point.getState(index2));
-            index++;
+        
+        for(int j=0; j < solution.getSize(); j += skip+1) {
+        	NumericalSolutionPoint point = solution.get(j);
+        	frame.append(0, point.getState(index1), point.getState(index2));
         }
-        if (skip!=0 && index%skip != 0 && point!=null) {
-            frame.append(0, point.getState(index1), point.getState(index2));
-        }
+        
         frame.setVisible ( true ) ;
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE) ;
     }
+    
+    /*
+	 * ===================================================
+	 * Animations
+	 * ===================================================
+	 */
     
     static public void animateTimePlot(NumericalSolution solution, int[] indexes) {
         AnimationControl.createApp(new AnimateSequence(solution,indexes));
@@ -196,5 +163,55 @@ public class DisplaySolution {
         }
 
     }
+    
+    
+//  static public void listError(NumericalSolution solution, 
+//                               StateFunction trueSolution,
+//                               int[] indexes) {
+//      listError(solution.iterator(),trueSolution, indexes);
+//  }
+//  
+//  static public void listError(NumericalSolution solution, 
+//                               StateFunction trueSolution,
+//                               int[] indexes, int numberOfPoints) {
+//      listError(solution.iterator(numberOfPoints),trueSolution, indexes);
+//  }
+//
+//  static public double maximumError(NumericalSolution solution, 
+//                                  StateFunction trueSolution,
+//                                  int[] indexes) {
+//      return maximumError(solution.iterator(),trueSolution, indexes);
+//  }
+//  
+//  static private double maximumError(Iterator<NumericalSolutionPoint> iterator, StateFunction trueSolution, int[] indexes) {
+//      double maxError = 0.0;
+//      while (iterator.hasNext()) {
+//          NumericalSolutionPoint point = iterator.next();
+//          double[] trueState = trueSolution.getState(point.getTime());
+//          double error = 0;
+//          for (int i=0; i<indexes.length;i++) {
+//              error += Math.abs(point.getState(indexes[i])-trueState[indexes[i]]);
+//          }
+//          maxError = Math.max(maxError, error);
+//      }
+//      return maxError;
+//  }
+//
+//  static private double listError(Iterator<NumericalSolutionPoint> iterator, StateFunction trueSolution, int[] indexes) {
+//      double maxError = 0.0;
+//      while (iterator.hasNext()) {
+//          NumericalSolutionPoint point = iterator.next();
+//          double[] trueState = trueSolution.getState(point.getTime());
+//          System.out.print("time="+point.getTime());
+//          double error = 0;
+//          for (int i=0; i<indexes.length;i++) {
+//              System.out.print(", x["+indexes[i]+"]="+point.getState(indexes[i])+", vs "+trueState[indexes[i]]);
+//              error += Math.abs(point.getState(indexes[i])-trueState[indexes[i]]);
+//          }
+//          maxError = Math.max(maxError, error);
+//          System.out.println(", error = "+error);
+//      }
+//      return maxError;
+//  }
 
 }

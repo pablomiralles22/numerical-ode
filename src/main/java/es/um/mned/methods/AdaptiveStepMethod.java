@@ -1,8 +1,8 @@
 package es.um.mned.methods;
 
+import es.um.mned.ode.ConvergenceException;
 import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.ode.NumericalSolutionPoint;
-import es.um.mned.utils.ConvergenceException;
 
 abstract public class AdaptiveStepMethod extends FixedStepMethod {
 	

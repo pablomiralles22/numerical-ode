@@ -1,4 +1,4 @@
-package es.um.mned.utils;
+package es.um.mned.ode;
 
 public class ConvergenceException extends Exception {
 

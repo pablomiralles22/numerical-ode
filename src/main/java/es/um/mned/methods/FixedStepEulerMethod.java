@@ -7,11 +7,11 @@ package es.um.mned.methods;
 
 import java.util.Iterator;
 
+import es.um.mned.ode.ConvergenceException;
 import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.ode.NumericalSolution;
 import es.um.mned.ode.NumericalSolutionPoint;
-import es.um.mned.utils.ConvergenceException;
 
 public class FixedStepEulerMethod extends FixedStepMethod {
     

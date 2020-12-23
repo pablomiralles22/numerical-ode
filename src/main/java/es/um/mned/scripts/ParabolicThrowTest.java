@@ -3,10 +3,10 @@ package es.um.mned.scripts;
 import es.um.mned.interpolation.StateFunction;
 import es.um.mned.methods.FixedStepEulerMethod;
 import es.um.mned.methods.FixedStepMethod;
+import es.um.mned.ode.ConvergenceException;
 import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.problems.ParabolicThrowWithFriction;
-import es.um.mned.utils.ConvergenceException;
 
 public class ParabolicThrowTest {
 	

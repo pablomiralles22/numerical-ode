@@ -3,10 +3,10 @@ package es.um.mned.scripts;
 import es.um.mned.interpolation.StateFunction;
 import es.um.mned.methods.FixedStepEulerMethod;
 import es.um.mned.methods.FixedStepMethod;
+import es.um.mned.ode.ConvergenceException;
 import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.ode.NumericalSolution;
 import es.um.mned.problems.Taylor1DExample;
-import es.um.mned.utils.ConvergenceException;
 import es.um.mned.utils.DisplaySolution;
 
 public class Taylor1DExampleScript {

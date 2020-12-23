@@ -36,9 +36,9 @@ public class ArenstorfAdaptativeMethods {
     
     public static void main(String[] args) throws ConvergenceException {
     	// Parameters
-        double hStep = -1.0e-2;
+        double hStep = 1.0e-2;
         double tolerance = 1.0e-8;
-        double maxT = -ArenstorfOrbits.PERIOD * 2.3;
+        double maxT = ArenstorfOrbits.PERIOD * 2.3;
         // Problem
         InitialValueProblem problem = new ArenstorfOrbits(
         		0.,
@@ -60,7 +60,8 @@ public class ArenstorfAdaptativeMethods {
         
         System.out.println ("Evaluations = " + problem.getEvaluationCounter());
 
-        DisplaySolution.statePlot(method.getSolution(), 0, 2,(int) Math.floor(1.0e-2/Math.abs(hStep)));
+//        DisplaySolution.statePlot(method.getSolution(), 0, 2,(int) Math.floor(1.0e-2/Math.abs(hStep)));
+        DisplaySolution.statePlot(method.getSolution(), 0, 2);
         if (method instanceof AdaptiveStepMethod) 
             DisplaySequence.plot(((AdaptiveStepMethod) method).getSolution().getStepList());
     }

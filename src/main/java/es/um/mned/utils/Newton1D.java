@@ -1,6 +1,7 @@
 package es.um.mned.utils;
 
 import es.um.mned.interpolation.ExtendedStateFunction;
+import es.um.mned.ode.ConvergenceException;
 
 /*
  * This method assumes f is a one-dimensional state function

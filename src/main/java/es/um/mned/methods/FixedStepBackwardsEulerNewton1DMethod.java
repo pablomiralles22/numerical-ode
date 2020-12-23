@@ -1,9 +1,9 @@
 package es.um.mned.methods;
 
 import es.um.mned.interpolation.ExtendedStateFunction;
+import es.um.mned.ode.ConvergenceException;
 import es.um.mned.ode.Event;
 import es.um.mned.ode.ExtendedInitialValueProblem;
-import es.um.mned.utils.ConvergenceException;
 import es.um.mned.utils.Newton1D;
 
 public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {

@@ -5,10 +5,10 @@ import java.util.Vector;
 import es.um.mned.interpolation.StateFunction;
 import es.um.mned.methods.FixedStepEulerMethod;
 import es.um.mned.methods.FixedStepMethod;
+import es.um.mned.ode.ConvergenceException;
 import es.um.mned.ode.Event;
 import es.um.mned.ode.NumericalSolution;
 import es.um.mned.problems.SimpleHarmonicOscillator;
-import es.um.mned.utils.ConvergenceException;
 
 public class SHOEulerMethod {
 	

@@ -2,13 +2,11 @@ package es.um.mned.scripts;
 
 import java.util.Arrays;
 
-import es.um.mned.methods.AdaptiveStepMethod;
-import es.um.mned.methods.AdaptiveStepRKFehlbergMethod;
-import es.um.mned.methods.FixedStepMethod;
+import es.um.mned.methods.*;
+import es.um.mned.ode.ConvergenceException;
 import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.problems.TwoBodyProblem;
-import es.um.mned.utils.ConvergenceException;
 import es.um.mned.utils.DisplaySequence;
 import es.um.mned.utils.DisplaySolution;
 
@@ -51,10 +49,11 @@ public class TwoBodyProblemRKMethods {
 	
     public static void main(String[] args) {
     	// Parameters
-        double hStep = -10;
+        double hStep = 10;
         double tolerance = 1.0e-8;
         int maxYears = 12;
         double tMax = -maxYears * 365 * 24;
+        System.out.println(tMax / hStep);
         
         // Problem
         InitialValueProblem problem = new TwoBodyProblem(0., Arrays.copyOf(initState, initState.length));
@@ -62,11 +61,11 @@ public class TwoBodyProblemRKMethods {
         Event yCross = new YCross(tolerance);
 
         // Methods
-//        FixedStepMethod method = new FixedStepModifiedEulerMethod(problem,hStep, yCross);
+        FixedStepMethod method = new FixedStepModifiedEulerMethod(problem,hStep, yCross);
 //        FixedStepMethod method = new FixedStepPredictorCorrector4Method(problem,hStep,yCross);
 //        FixedStepMethod method = new AdaptiveStepEulerMethod(problem,hStep, tolerance, yCross);
 //        FixedStepMethod method = new AdaptiveStepPredictorCorrector4Method(problem,hStep, tolerance, yCross);
-        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance, yCross);
+//        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance, yCross);
         
         
         

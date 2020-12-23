@@ -1,8 +1,8 @@
 package es.um.mned.methods;
 
+import es.um.mned.ode.ConvergenceException;
 import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
-import es.um.mned.utils.ConvergenceException;
 
 public class AdaptiveStepRK4Method extends AdaptiveStepMethod {
     private double mCurrentStep;

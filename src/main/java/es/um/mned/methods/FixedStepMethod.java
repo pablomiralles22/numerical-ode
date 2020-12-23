@@ -4,10 +4,10 @@ import java.util.Iterator;
 import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.ode.NumericalSolution;
 import es.um.mned.ode.NumericalSolutionPoint;
+import es.um.mned.ode.ConvergenceException;
 import es.um.mned.ode.Event;
 import es.um.mned.interpolation.StateFunction;
 import es.um.mned.utils.BisectionMethod;
-import es.um.mned.utils.ConvergenceException;
 
 abstract public class FixedStepMethod {
  
