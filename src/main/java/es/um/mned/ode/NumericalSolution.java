@@ -12,13 +12,6 @@ import java.util.HashMap;
 import es.um.mned.interpolation.StateFunction;
 import es.um.mned.interpolation.Interpolator;
 
-/**
- * Numerical Solution is a list of NumericalSolutionPoints (t,Y(t)), 
- * t is time (the independent variable), Y(t) is state at t.
- * 
- * @author F. Esquembre
- * @version September 2020
- */
 public class NumericalSolution implements StateFunction{
 	private InitialValueProblem ivp;
     private ArrayList<NumericalSolutionPoint> pointList;
@@ -29,17 +22,20 @@ public class NumericalSolution implements StateFunction{
      * Creates another solution for extrapolation purposes.
      * The new solution uses the same problem, mind it when
      * checking the number of evaluations.
+     * The new solution is also completely empty.
      */
     public static NumericalSolution createExtrapolationSol(NumericalSolution other) {
     	NumericalSolution extrapolatedSol = new NumericalSolution();
     	extrapolatedSol.ivp = other.ivp;
-    	extrapolatedSol.order = other.order;
-    	extrapolatedSol.interpolators = new HashMap<>();
+    	extrapolatedSol.order = other.order + 1;
     	return extrapolatedSol;
     }
    
+    // I don't want people using this constructor, because it doesn't
+    // initialize most things
 	private NumericalSolution() {
 		pointList = new ArrayList<>();
+		interpolators = new HashMap<>();
 	}
     
     /**
@@ -168,7 +164,7 @@ public class NumericalSolution implements StateFunction{
    public double getState(double t, int index) {
 	   if(pointList.isEmpty() || t<pointList.get(0).getTime()
    			|| t>pointList.get(pointList.size()-1).getTime())
-    		System.err.println("Evaluation out of bounds, precision not guaranteed.");
+    		throw new IllegalArgumentException("t is not the defined domain for this solution");
    	
 	   	int l = 1, r = pointList.size()-1;
 	   	while(l <= r) {
@@ -183,16 +179,22 @@ public class NumericalSolution implements StateFunction{
    }
    
    /*
+    * ============================================================
+    * Different utils for a numerical solution
+    * ============================================================
+    */
+   
+   /*
     * Returns max error given analytical solution and indexes to compare
     */
-   public double getMaxError(StateFunction analyticalSolution, int[] inds) {
+   public double getMaxError(StateFunction analyticalSolution, int[] indexList) {
    	double err = pointList.stream()
 	    	.map(p -> {
 	    		double aux = 0.0;
 	    		double[] state = p.getState();
 	    		double t = p.getTime();
-	    		for(int i=0; i < inds.length; ++i) {
-	    			double diff = (state[inds[i]] - analyticalSolution.getState(t, inds[i]));
+	    		for(int i=0; i < indexList.length; ++i) {
+	    			double diff = (state[indexList[i]] - analyticalSolution.getState(t, indexList[i]));
 	    			aux += diff*diff;
 	    		}
 	    		return aux;
@@ -208,14 +210,14 @@ public class NumericalSolution implements StateFunction{
     public double getMaxError(StateFunction analyticalSolution) {
     	double err = pointList.stream()
 	    	.map(p -> {
-	    		double aux = 0.0;
+	    		double currentErr = 0.0;
 	    		double[] state = p.getState();
 	    		double t = p.getTime();
 	    		for(int i=0; i < state.length; ++i) {
 	    			double diff = (state[i] - analyticalSolution.getState(t, i));
-	    			aux += diff*diff;
+	    			currentErr += diff*diff;
 	    		}
-	    		return aux;
+	    		return currentErr;
 	    	})
 	    	.max(Double::compare)
 	    	.get();

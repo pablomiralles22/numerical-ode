@@ -99,6 +99,7 @@ abstract public class FixedStepMethod {
 	}
 
 
+	// Converts event to state function
     private static class EventStateFunction implements StateFunction {
         private StateFunction interpolator;
         private Event event;
@@ -119,6 +120,7 @@ abstract public class FixedStepMethod {
         }
     }
 
+    // Checks if the event occurred between the last 2 points
     private boolean checkEvent() throws ConvergenceException {
         if(event == null) return false;
         int size = mSolution.getSize();
@@ -179,13 +181,18 @@ abstract public class FixedStepMethod {
      */
     public NumericalSolutionPoint step() throws ConvergenceException {
     	currentUserTime += mStep;
+    	
         NumericalSolutionPoint lastPoint = mSolution.getLastPoint();
         double time = lastPoint.getTime();
         double[] state = lastPoint.getState();
         time = doStep(mStep,time,state);
+        
         if (Double.isNaN(time)) return null;
+        
+        
         NumericalSolutionPoint point = mSolution.add(time, state);
         checkEvent(); // No need to check if blocking
+        
         return point;
     }
     

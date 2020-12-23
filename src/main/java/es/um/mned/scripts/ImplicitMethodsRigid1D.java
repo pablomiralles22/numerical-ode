@@ -7,11 +7,11 @@ import es.um.mned.utils.*;
 
 public class ImplicitMethodsRigid1D {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// Params
 		double maxTime = 8;
 		double tolerance = 1e-10;
-		double hStep = 1e-5;
+		double hStep = 1e-3;
 		
 		double t0 = 0.;
 		double[] x0 = new double[] {-1};
@@ -21,7 +21,8 @@ public class ImplicitMethodsRigid1D {
         
         // Methods
 //        FixedStepMethod method = new FixedStepBackwardsEulerNewton1DMethod(problem,hStep, tolerance);
-        FixedStepMethod method = new FixedStepTrapezoidalNewton1DMethod(problem, hStep, tolerance);
+//        FixedStepMethod method = new FixedStepTrapezoidalNewton1DMethod(problem, hStep, tolerance);
+        FixedStepMethod method = new FixedStepBDFNewton1DMethod(problem, 5, hStep, tolerance);
 //        FixedStepMethod method = new FixedStepPredictorCorrector4Method(problem,10);
 //        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance);
         

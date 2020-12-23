@@ -55,7 +55,7 @@ public class ArenstorfAdaptativeMethods {
         
         System.out.println ("Evaluations = " + problem.getEvaluationCounter());
 
-        DisplaySolution.statePlot(method.getSolution(), 0, 2,(int) Math.floor(1.0e-2/hStep));
+        DisplaySolution.statePlot(method.getSolution(), 0, 2,(int) Math.floor(1.0e-2/Math.abs(hStep)));
         if (method instanceof AdaptiveStepMethod) 
             DisplaySequence.plot(((AdaptiveStepMethod) method).getSolution().getStepList());
     }

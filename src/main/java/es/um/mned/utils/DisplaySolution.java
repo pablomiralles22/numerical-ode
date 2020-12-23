@@ -34,25 +34,25 @@ public class DisplaySolution {
         listError(solution.iterator(numberOfPoints),trueSolution, indexes);
     }
 
-    static public double maximumError(NumericalSolution solution, 
-                                    StateFunction trueSolution,
-                                    int[] indexes) {
-        return maximumError(solution.iterator(),trueSolution, indexes);
-    }
-    
-    static private double maximumError(Iterator<NumericalSolutionPoint> iterator, StateFunction trueSolution, int[] indexes) {
-        double maxError = 0.0;
-        while (iterator.hasNext()) {
-            NumericalSolutionPoint point = iterator.next();
-            double[] trueState = trueSolution.getState(point.getTime());
-            double error = 0;
-            for (int i=0; i<indexes.length;i++) {
-                error += Math.abs(point.getState(indexes[i])-trueState[indexes[i]]);
-            }
-            maxError = Math.max(maxError, error);
-        }
-        return maxError;
-    }
+//    static public double maximumError(NumericalSolution solution, 
+//                                    StateFunction trueSolution,
+//                                    int[] indexes) {
+//        return maximumError(solution.iterator(),trueSolution, indexes);
+//    }
+//    
+//    static private double maximumError(Iterator<NumericalSolutionPoint> iterator, StateFunction trueSolution, int[] indexes) {
+//        double maxError = 0.0;
+//        while (iterator.hasNext()) {
+//            NumericalSolutionPoint point = iterator.next();
+//            double[] trueState = trueSolution.getState(point.getTime());
+//            double error = 0;
+//            for (int i=0; i<indexes.length;i++) {
+//                error += Math.abs(point.getState(indexes[i])-trueState[indexes[i]]);
+//            }
+//            maxError = Math.max(maxError, error);
+//        }
+//        return maxError;
+//    }
 
     static private double listError(Iterator<NumericalSolutionPoint> iterator, StateFunction trueSolution, int[] indexes) {
         double maxError = 0.0;
