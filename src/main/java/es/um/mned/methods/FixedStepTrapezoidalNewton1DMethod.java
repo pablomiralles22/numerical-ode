@@ -56,7 +56,7 @@ public class FixedStepTrapezoidalNewton1DMethod extends FixedStepMethod {
 	 */
 	
 	Trapezoidal1DMethodExtendedEquation mEquation;
-	double mTolerance;
+	double tolerance = 0.0; // this will use default Newton tol
 	
 	/*
 	 * ========================================
@@ -64,22 +64,29 @@ public class FixedStepTrapezoidalNewton1DMethod extends FixedStepMethod {
 	 * ========================================
 	 */
 
-	public FixedStepTrapezoidalNewton1DMethod(ExtendedInitialValueProblem problem, double step, double tolerance) {
+	public FixedStepTrapezoidalNewton1DMethod(ExtendedInitialValueProblem problem, double step) {
 		super(problem, step);
 		mEquation = new Trapezoidal1DMethodExtendedEquation(problem, step);
-		mTolerance = tolerance;
 	}
 	
-	public FixedStepTrapezoidalNewton1DMethod(ExtendedInitialValueProblem problem, double step, double tolerance, Event event) {
-		this(problem, step, tolerance);
+	public FixedStepTrapezoidalNewton1DMethod(ExtendedInitialValueProblem problem, double step, Event event) {
+		this(problem, step);
 		super.setEvent(event);
 	}
 	
 	/*
 	 * ========================================
-	 * Step and order
+	 * Step, order and tol
 	 * ========================================
 	 */
+
+	/**
+	 * Set tolerance for Newton method (advanced users)
+	 * @param tolerance
+	 */
+	public void setNewtonTolerance(double tolerance) {
+		this.tolerance = tolerance;
+	}
 	
 	@Override
     public int getOrder() {
@@ -92,7 +99,7 @@ public class FixedStepTrapezoidalNewton1DMethod extends FixedStepMethod {
 		mEquation.t = time;
 		mEquation.x = state[0];
 		
-		state[0] = Newton1D.solve(mEquation, state[0], mTolerance);
+		state[0] = Newton1D.solve(mEquation, state[0], tolerance);
         return time+deltaTime;
 	}
 

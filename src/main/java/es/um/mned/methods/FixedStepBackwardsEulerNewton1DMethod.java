@@ -56,8 +56,8 @@ public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
 	 * ========================================
 	 */
 	
-	BackwardsEuler1DMethodExtendedEquation mEquation;
-	double mTolerance;
+	BackwardsEuler1DMethodExtendedEquation equation;
+	double tolerance = 0.0; // This will use Newton's default tol
 	
 	/*
 	 * ========================================
@@ -65,22 +65,29 @@ public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
 	 * ========================================
 	 */
 
-	public FixedStepBackwardsEulerNewton1DMethod(ExtendedInitialValueProblem problem, double step, double tolerance) {
+	public FixedStepBackwardsEulerNewton1DMethod(ExtendedInitialValueProblem problem, double step) {
 		super(problem, step);
-		mEquation = new BackwardsEuler1DMethodExtendedEquation(problem, step);
-		mTolerance = tolerance;
+		equation = new BackwardsEuler1DMethodExtendedEquation(problem, step);
 	}
 	
-	public FixedStepBackwardsEulerNewton1DMethod(ExtendedInitialValueProblem problem, double step, double tolerance, Event event) {
-		this(problem, step, tolerance);
+	public FixedStepBackwardsEulerNewton1DMethod(ExtendedInitialValueProblem problem, double step, Event event) {
+		this(problem, step);
 		super.setEvent(event);
 	}
 	
 	/*
 	 * ========================================
-	 * Step and order
+	 * Step, order and tol
 	 * ========================================
 	 */
+
+	/**
+	 * Set tolerance for Newton method (advanced users)
+	 * @param tolerance
+	 */
+	public void setNewtonTolerance(double tolerance) {
+		this.tolerance = tolerance;
+	}
     
     @Override
     public int getOrder() {
@@ -89,9 +96,9 @@ public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
 
 	@Override
 	public double doStep(double deltaTime, double time, double[] state) throws ConvergenceException {
-		mEquation.x = state[0];
-		mEquation.t = time;
-		state[0] = Newton1D.solve(mEquation, state[0]);
+		equation.x = state[0];
+		equation.t = time;
+		state[0] = Newton1D.solve(equation, state[0], tolerance);
         return time+deltaTime;
 	}
 

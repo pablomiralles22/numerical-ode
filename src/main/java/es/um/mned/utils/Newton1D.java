@@ -17,7 +17,9 @@ public class Newton1D {
 			double start,
 			double tol
 			) throws ConvergenceException {
+		
 		double x = start;
+		if(tol == 0.0) tol = DEFAULT_TOL;
 		
 		for(int i = 0; i < MAX_IT; ++i) {
 			double next = x - f.getState(x, 0) / f.getDerivative(x, 0);
@@ -27,13 +29,6 @@ public class Newton1D {
 		}
 		
 		throw new ConvergenceException("Newton method did not converge.");
-	}
-	
-	public static double solve(
-			ExtendedStateFunction f,
-			double start
-			) throws ConvergenceException {
-		return solve(f, start, DEFAULT_TOL);
 	}
 	
 }

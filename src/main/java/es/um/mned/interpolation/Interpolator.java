@@ -4,13 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
 
-/**
- *
- * @author paco
- */
 public class Interpolator implements StateFunction {
 
-    private double[] r;
+    private double[] times;
     private double[][] coeffs;
     private int dim;
     private int n;
@@ -23,19 +19,19 @@ public class Interpolator implements StateFunction {
             n += al.length;
         }
 
-        r = new double[n];
+        times = new double[n];
         {
             int i=0;
             for(Double point : m.keySet()) {
                 for(int k=0; k < m.get(point).length; ++k)
-                    r[i++] = point.doubleValue();
+                    times[i++] = point.doubleValue();
             }
         }
 
         double[][][] dd = new double[n][n][dim];
 
         for(int i=0; i<n; ++i) {
-            dd[0][i] = m.get(r[i])[0];
+            dd[0][i] = m.get(times[i])[0];
         }
 
         coeffs = new double[n][dim];
@@ -43,25 +39,24 @@ public class Interpolator implements StateFunction {
         for(int i=1; i<n; ++i) {
             factorial *= i;
             for(int j=i; j<n; ++j) {
-                if(r[j] == r[j-i])
+                if(times[j] == times[j-i])
                     for(int h=0; h<dim; ++h)
-                        dd[i][j][h] = m.get(r[j])[i][h] / factorial;
+                        dd[i][j][h] = m.get(times[j])[i][h] / factorial;
                 else
                     for(int h=0; h<dim; ++h)
-                        dd[i][j][h] = (dd[i-1][j][h]-dd[i-1][j-1][h]) / (r[j]-r[j-i]);
+                        dd[i][j][h] = (dd[i-1][j][h]-dd[i-1][j-1][h]) / (times[j]-times[j-i]);
             }
         }
 
         for(int i=0; i<n; ++i)
         	System.arraycopy(dd[i][i], 0, coeffs[i], 0, dim);
-//            coeffs[i] = Arrays.copyOf(dd[i][i], dim);
     }
 
     public double getState(double t, int index) {
         double ans = coeffs[0][index];
         double aux = 1.;
         for(int i=1; i<n; ++i) {
-            aux *= (t - r[i-1]);
+            aux *= (t - times[i-1]);
             ans += aux * coeffs[i][index];
         }
         return ans;
@@ -72,7 +67,7 @@ public class Interpolator implements StateFunction {
         double aux = 1.;
         
         for(int i=1; i<n; ++i) {
-        	aux *= (t - r[i-1]);
+        	aux *= (t - times[i-1]);
         	for(int h=0; h<dim; ++h)
                 ans[h] += aux * coeffs[i][h];
         }

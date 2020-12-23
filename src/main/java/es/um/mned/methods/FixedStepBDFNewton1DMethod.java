@@ -16,7 +16,6 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
 	BDF1DMethodExtendedEquation implements ExtendedStateFunction {
 
 		protected double t, h;
-        protected int nStates;
         protected double[] states; // w_{i}, w_{i-1}, ...
         protected double[] a; // a[i]*w_{i}, a[i-1]* w_{i-1}, ...
         protected double b;
@@ -24,17 +23,16 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
 		
 		public BDF1DMethodExtendedEquation (ExtendedInitialValueProblem ivp, double step, double[] a, double b) {
 			this.ivp = ivp;
-            nStates = a.length;
             this.a = a;
             this.b = b;
 			h = step;
-            states = new double[nStates];
+            states = new double[a.length];
 		}
 
 		@Override
 		public double[] getState(double w) {
             double result = w;
-            for(int i=0; i < nStates; ++i)
+            for(int i=0; i < a.length; ++i)
                 result += a[i] * states[i];
             result -= b * h * (ivp.getDerivative(t+h, new double[]{w} ))[0];
 
@@ -46,7 +44,7 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
 		@Override
 		public double getState(double w, int index) {
             double result = w;
-            for(int i=0; i < nStates; ++i)
+            for(int i=0; i < a.length; ++i)
                 result += a[i] * states[i];
             result -= b * h * (ivp.getDerivative(t+h, new double[]{w} ))[0];
 
@@ -72,11 +70,11 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
 	 * Attributes
 	 * ========================================
 	 */
-	BDF1DMethodExtendedEquation mEquation;
+	BDF1DMethodExtendedEquation equation;
     Trapezoidal1DMethodExtendedEquation startEquation;
     int order;
     int startSteps;
-	double mTolerance;
+	double tolerance = 0.0; // this will use Newton's default tol
 	
 	/*
 	 * ========================================
@@ -94,8 +92,7 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
 	public FixedStepBDFNewton1DMethod(
             ExtendedInitialValueProblem problem,
             int order,
-            double step,
-            double tolerance
+            double step
             ) {
 
 		super(problem, step);
@@ -129,13 +126,14 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
             default:
             	throw new IllegalArgumentException("Order not available.");
         }
-		mEquation = new BDF1DMethodExtendedEquation(problem, step, a, b);
-		// this kills BDFs of order > 3, but I don't have better implicit methods.
-		// if I had them I would initialize the first points and startEquation inside the switch.
-		// Order 3 still works well because error in each trapezoidal step has O(h^3) error
-        startEquation = new Trapezoidal1DMethodExtendedEquation(problem, step); 
-
-		mTolerance = tolerance;
+		equation = new BDF1DMethodExtendedEquation(problem, step, a, b);
+		/*
+		 * this kills BDFs of order > 3, but I don't have better implicit methods.
+		 * if I had them I would initialize the first points and startEquation inside the switch.
+		 * Notice that order 3 still works well because error in each trapezoidal step has O(h^3) error.
+		 * I don't think it's a good idea to use RK methods, as it would lead to issues with rigid problems.
+		 */
+        startEquation = new Trapezoidal1DMethodExtendedEquation(problem, step);
 	}
 	
 
@@ -150,18 +148,25 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
             ExtendedInitialValueProblem problem,
             int order,
             double step,
-            double tolerance,
             Event event
             ) {
-		this(problem, order, step, tolerance);
+		this(problem, order, step);
 		super.setEvent(event);
 	}
 	
 	/*
 	 * ========================================
-	 * Step and order
+	 * Step, order and tol
 	 * ========================================
 	 */
+
+	/**
+	 * Set tolerance for Newton method (advanced users)
+	 * @param tolerance
+	 */
+	public void setNewtonTolerance(double tolerance) {
+		this.tolerance = tolerance;
+	}
 	
 	@Override
     public int getOrder() {
@@ -171,21 +176,21 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
 	@Override
 	public double doStep(double deltaTime, double time, double[] state) throws ConvergenceException {
         if(startSteps > 0) { // method start
-        	mEquation.states[--startSteps] = state[0];
+        	equation.states[--startSteps] = state[0];
             startEquation.derivative = mProblem.getDerivative(time, state)[0];
             startEquation.t = time;
             startEquation.x = state[0];
-            state[0] = Newton1D.solve(startEquation, state[0], mTolerance);
+            state[0] = Newton1D.solve(startEquation, state[0], tolerance);
             return time+deltaTime;
         }
 
-		mEquation.t = time;
+		equation.t = time;
 		
-        for(int i = mEquation.nStates - 1; i>0; --i)
-            mEquation.states[i] = mEquation.states[i-1];
-        mEquation.states[0] = state[0];
+        for(int i = equation.states.length - 1; i>0; --i)
+            equation.states[i] = equation.states[i-1];
+        equation.states[0] = state[0];
 		
-		state[0] = Newton1D.solve(mEquation, state[0], mTolerance);
+		state[0] = Newton1D.solve(equation, state[0], tolerance);
         return time+deltaTime;
 	}
 
