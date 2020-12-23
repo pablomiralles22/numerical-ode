@@ -74,9 +74,6 @@ public class SHOEulerMethod {
         
         // Analytical sol
         StateFunction sol = shoProblem.getTrueSol();
-        
-        // Event
-        XCross xCross = new XCross();
 
     	// -----------------------------------
 
@@ -91,19 +88,24 @@ public class SHOEulerMethod {
         shoProblem.resetEvaluationCounter();
         
         // Euler method h
-
-        FixedStepMethod method = new FixedStepEulerMethod(shoProblem, hStep, xCross);
+        XCross eulerCrossH = new XCross();
+        FixedStepMethod method = new FixedStepEulerMethod(shoProblem, hStep, eulerCrossH);
         method.solve(maxTime);
         System.out.println ("Max Error for h ("+hStep+") is "+ method.getSolution().getMaxError(sol));
-        // Euler method h/2
-        FixedStepMethod method2 = new FixedStepEulerMethod(shoProblem,hStep/2);
-        method2.solve(maxTime);
+        System.out.println("Frequency with h: " + eulerCrossH.getFrequency());
         
+        
+        // Euler method h/2
+        XCross eulerCrossH2 = new XCross();
+        FixedStepMethod method2 = new FixedStepEulerMethod(shoProblem,hStep/2, eulerCrossH2);
+        method2.solve(maxTime);
+        System.out.println("Frequency with h/2: " + eulerCrossH2.getFrequency());
+        
+        
+        // Error comparison
         System.out.println ("Max Error for h/2 (" + hStep/2 + ")is " + solution.getMaxError(sol));
         System.out.println ("Max Error for extrapolation is " + solution.getMaxError(sol));
         System.out.println ("Evaluations = "+shoProblem.getEvaluationCounter()+"\n");
-        
-        System.out.println("Frequency: " + xCross.getFrequency());
         
         
 //        DisplaySolution.listError(solution, sol, indexes,10);
