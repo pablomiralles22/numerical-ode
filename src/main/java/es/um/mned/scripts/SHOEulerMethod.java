@@ -1,8 +1,11 @@
 package es.um.mned.scripts;
 
+import java.util.Vector;
+
 import es.um.mned.interpolation.StateFunction;
 import es.um.mned.methods.FixedStepEulerMethod;
 import es.um.mned.methods.FixedStepMethod;
+import es.um.mned.ode.Event;
 import es.um.mned.ode.NumericalSolution;
 import es.um.mned.problems.SimpleHarmonicOscillator;
 import es.um.mned.utils.ConvergenceException;
@@ -21,6 +24,35 @@ public class SHOEulerMethod {
     static private double Xo = 1.5;
     static private double Vo = 0;
     
+    private static class XCross extends Event {
+    	
+    	private Vector<Double> zeros;
+
+		public XCross(boolean blocking, double tolerance) {
+			super(blocking, tolerance);
+			zeros = new Vector<>();
+		}
+
+		@Override
+		public double crossFunction(double time, double[] state) {
+			return state[0];
+		}
+
+		@Override
+		public void crossAction(double time, double[] state) {
+			System.out.println("=============================");
+			System.out.println("X coordenate: " + state[0]);
+			System.out.println("Time: " + time);
+			System.out.println("=============================");
+			zeros.addElement(time);
+		}
+		
+		public double getFrequency() {
+			return zeros.elementAt(2) - zeros.elementAt(0);
+		}
+    	
+    }
+    
     public static void main(String[] args) throws ConvergenceException {
     	// Params
         double maxTime = 40;
@@ -38,6 +70,9 @@ public class SHOEulerMethod {
         
         // Analytical sol
         StateFunction sol = shoProblem.getTrueSol();
+        
+        // Event
+        XCross xCross = new XCross(false, 1e-8);
 
     	// -----------------------------------
 
@@ -53,7 +88,7 @@ public class SHOEulerMethod {
         
         // Euler method h
 
-        FixedStepMethod method = new FixedStepEulerMethod(shoProblem,hStep);
+        FixedStepMethod method = new FixedStepEulerMethod(shoProblem, hStep, xCross);
         method.solve(maxTime);
         System.out.println ("Max Error for h ("+hStep+") is "+ method.getSolution().getMaxError(sol));
         // Euler method h/2
@@ -63,6 +98,8 @@ public class SHOEulerMethod {
         System.out.println ("Max Error for h/2 (" + hStep/2 + ")is " + solution.getMaxError(sol));
         System.out.println ("Max Error for extrapolation is " + solution.getMaxError(sol));
         System.out.println ("Evaluations = "+shoProblem.getEvaluationCounter()+"\n");
+        
+        System.out.println("Frequency: " + xCross.getFrequency());
         
         
 //        DisplaySolution.listError(solution, sol, indexes,10);
