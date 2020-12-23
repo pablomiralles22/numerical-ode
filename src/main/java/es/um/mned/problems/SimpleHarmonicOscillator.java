@@ -22,7 +22,6 @@ public class SimpleHarmonicOscillator extends InitialValueProblem {
     private double freq = 1.3; // 2.4
     
     private double Xo = 1.5;
-    private double Vo = 0;
     
     public SimpleHarmonicOscillator(
             double t0, double[] x0,
@@ -31,7 +30,6 @@ public class SimpleHarmonicOscillator extends InitialValueProblem {
             ) {
     	super(t0, x0);
         Xo = x0[0];
-        Vo = x0[1];
         this.l = l; this.m = m; this.k = k;
         this.b = b; this.amp = amp; this. freq = freq;
     }

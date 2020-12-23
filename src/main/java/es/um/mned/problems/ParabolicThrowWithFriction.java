@@ -5,7 +5,6 @@
  */
 package es.um.mned.problems;
 
-import es.um.mned.interpolation.StateFunction;
 import es.um.mned.ode.*;
 
 public class ParabolicThrowWithFriction extends InitialValueProblem {

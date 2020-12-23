@@ -2,20 +2,12 @@ package es.um.mned.scripts;
 
 import java.util.Arrays;
 
-import es.um.mned.interpolation.HermiteInterpolator;
-import es.um.mned.interpolation.StateFunction;
-import es.um.mned.methods.AdaptiveStepEulerMethod;
 import es.um.mned.methods.AdaptiveStepMethod;
-import es.um.mned.methods.AdaptiveStepPredictorCorrector4Method;
 import es.um.mned.methods.AdaptiveStepRKFehlbergMethod;
 import es.um.mned.methods.FixedStepMethod;
-import es.um.mned.methods.FixedStepModifiedEulerMethod;
-import es.um.mned.methods.FixedStepPredictorCorrector4Method;
 import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
-import es.um.mned.ode.NumericalSolutionPoint;
 import es.um.mned.problems.TwoBodyProblem;
-import es.um.mned.utils.BisectionMethod;
 import es.um.mned.utils.ConvergenceException;
 import es.um.mned.utils.DisplaySequence;
 import es.um.mned.utils.DisplaySolution;

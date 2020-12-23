@@ -9,7 +9,6 @@ import es.um.mned.ode.Event;
 import es.um.mned.ode.NumericalSolution;
 import es.um.mned.problems.SimpleHarmonicOscillator;
 import es.um.mned.utils.ConvergenceException;
-import es.um.mned.utils.DisplaySolution;
 
 public class SHOEulerMethod {
 	

@@ -5,12 +5,7 @@
  */
 package es.um.mned.problems;
 
-import es.um.mned.interpolation.StateFunction;
-import es.um.mned.methods.FixedStepEulerMethod;
-import es.um.mned.methods.FixedStepMethod;
 import es.um.mned.ode.*;
-import es.um.mned.utils.ConvergenceException;
-import es.um.mned.utils.DisplaySolution;
 
 /**
  *
