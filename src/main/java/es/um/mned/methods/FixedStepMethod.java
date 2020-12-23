@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package es.um.mned.methods;
 
 import java.util.Iterator;
@@ -14,12 +9,6 @@ import es.um.mned.interpolation.StateFunction;
 import es.um.mned.utils.BisectionMethod;
 import es.um.mned.utils.ConvergenceException;
 
-/**
- * Abstract class for a Fixed Step Method to solve an InitialValueProblem
- * 
- * @author F. Esquembre
- * @version September 2020
- */
 abstract public class FixedStepMethod {
  
     /**

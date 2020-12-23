@@ -13,12 +13,6 @@ import es.um.mned.ode.NumericalSolution;
 import es.um.mned.ode.NumericalSolutionPoint;
 import es.um.mned.utils.ConvergenceException;
 
-/**
- * Fixed Step Euler Method
- * 
- * @author F. Esquembre
- * @version September 2020
- */
 public class FixedStepEulerMethod extends FixedStepMethod {
     
     /**

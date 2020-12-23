@@ -1,20 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package es.um.mned.methods;
 
 import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.ode.NumericalSolutionPoint;
 import es.um.mned.utils.ConvergenceException;
 
-/**
- * Abstract class for a Fixed Step Method to solve an InitialValueProblem
- * 
- * @author F. Esquembre
- * @version September 2020
- */
 abstract public class AdaptiveStepMethod extends FixedStepMethod {
 	
  

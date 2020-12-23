@@ -1,12 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package es.um.mned.ode;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
 import java.util.HashMap;
 
 import es.um.mned.interpolation.StateFunction;
@@ -19,10 +16,17 @@ public class NumericalSolution implements StateFunction{
     private int order;
     
     /*
+     * ==================================================
+     * Constructors
+     * ==================================================
+     */
+    
+    /**
      * Creates another solution for extrapolation purposes.
      * The new solution uses the same problem, mind it when
      * checking the number of evaluations.
-     * The new solution is also completely empty.
+     * @param other another numerical solution
+     * @return new empty solution ready to fill
      */
     public static NumericalSolution createExtrapolationSol(NumericalSolution other) {
     	NumericalSolution extrapolatedSol = new NumericalSolution();
@@ -31,8 +35,9 @@ public class NumericalSolution implements StateFunction{
     	return extrapolatedSol;
     }
    
-    // I don't want people using this constructor, because it doesn't
-    // initialize most things
+	/**
+	 * Private constructor for the previous one
+	 */
 	private NumericalSolution() {
 		pointList = new ArrayList<>();
 		interpolators = new HashMap<>();
@@ -50,7 +55,12 @@ public class NumericalSolution implements StateFunction{
         this.order = order;
     }
 
-
+    /*
+     * ==================================================
+     * Methods to access and modify
+     * ==================================================
+     */
+    
 	/**
      * Adds a solution point
      * 
@@ -64,9 +74,14 @@ public class NumericalSolution implements StateFunction{
         return null;
     }
 
+    /**
+     * @param index
+     * @return point at position index
+     */
     public NumericalSolutionPoint get(int index) {
     	return pointList.get(index);
     }
+    
     /**
      * Gets the last point of the solution
      * @return 
@@ -75,13 +90,20 @@ public class NumericalSolution implements StateFunction{
         return pointList.get(pointList.size()-1);
     }
     
-    public void removeLast(int howMany) {
-        int size = pointList.size();
-        howMany = Math.min(howMany, size);
-        for (int i=0,last=size-1; i<howMany; i++,last--) {
-            pointList.remove(last);
-        }
-    }
+    /**
+     * Removes last howMany elements from the solution.
+     * I've commented it because I don't use it and it does not
+     * play well with how I handle interpolation
+     * @param howMany number of elements to remove
+     */
+//    public void removeLast(int howMany) {
+//        int size = pointList.size();
+//        howMany = Math.min(howMany, size);
+//        for (int i=0,last=size-1; i<howMany; i++,last--) {
+//        	interpolators.remove(last);
+//            pointList.remove(last);
+//        }
+//    }
     
     /**
      * Returns an iterator to iterate through the whole list of points in the solution
@@ -89,6 +111,14 @@ public class NumericalSolution implements StateFunction{
      */
     public Iterator<NumericalSolutionPoint> iterator() {
         return pointList.iterator();
+    }
+    
+    /**
+     * Exports the ability to do a forEach
+     * @param c
+     */
+    public void forEach(Consumer<NumericalSolutionPoint> c) {
+    	pointList.forEach(c);
     }
     
     /**
@@ -101,10 +131,17 @@ public class NumericalSolution implements StateFunction{
         return pointList.subList(size-numberOfPoints, size).iterator();
     }
     
+    /**
+     * @return size of the list of points calculated
+     */
     public int getSize() {
     	return pointList.size();
     }
     
+    /**
+     * Creates an interpolator for the range [t_{index-1},t_index]
+     * @param index
+     */
     private void putInterpolator(int index) {
         // in case we don't have enough points. The worst case scenerio
         // in this library is having 1 interpolator with worse precision
@@ -134,6 +171,12 @@ public class NumericalSolution implements StateFunction{
         interpolators.put(index, new Interpolator(m));
     }
     
+    /**
+     * Gets the interpolator for range [t_{index-1},t_index], and creates
+     * it if it does not exist.
+     * @param index
+     * @return
+     */
     public StateFunction getInterpolator(int index) {
     	if(index < 0 || index > pointList.size())
     		return null;
@@ -144,86 +187,101 @@ public class NumericalSolution implements StateFunction{
     	return interpolators.get(index);
     }
     
-    public double[] getState(double t) {
-    	if(pointList.isEmpty() || t<pointList.get(0).getTime()
-    			|| t>pointList.get(pointList.size()-1).getTime())
-    		System.err.println("Evaluation out of bounds, precision not guaranteed.");
-    	
-    	int l = 1, r = pointList.size()-1;
-    	while(l <= r) {
-    		int m = (l+r) / 2;
-    		if(pointList.get(m).getTime() <= t) l = m+1;
-    		else r = m-1;
-    	}
+    /*
+     * ============================================================
+     * State Function methods
+     * ============================================================
+     */
+    
+	/**
+	 * Interpolates to get the value for t \in [a,b]
+	 */
+	public double[] getState(double t) {
+		if (pointList.isEmpty() || t < pointList.get(0).getTime() || t > pointList.get(pointList.size() - 1).getTime())
+			System.err.println("Evaluation out of bounds, precision not guaranteed.");
 
-        l = Math.min(l, pointList.size()-1);
+		int l = 1, r = pointList.size() - 1;
+		while (l <= r) {
+			int m = (l + r) / 2;
+			if (pointList.get(m).getTime() <= t)
+				l = m + 1;
+			else
+				r = m - 1;
+		}
+
+		l = Math.min(l, pointList.size() - 1);
 
 		return getInterpolator(l).getState(t);
-    }
+	}
 
-   public double getState(double t, int index) {
-	   if(pointList.isEmpty() || t<pointList.get(0).getTime()
-   			|| t>pointList.get(pointList.size()-1).getTime())
-    		throw new IllegalArgumentException("t is not the defined domain for this solution");
-   	
-	   	int l = 1, r = pointList.size()-1;
-	   	while(l <= r) {
-	   		int m = (l+r) / 2;
-	   		if(pointList.get(m).getTime() <= t) l = m+1;
-	   		else r = m-1;
-	   	}
+	/**
+	 * Interpolates to get the value of position index for t \in [a,b]
+	 */
+	public double getState(double t, int index) {
+		if (pointList.isEmpty() || t < pointList.get(0).getTime() || t > pointList.get(pointList.size() - 1).getTime())
+			throw new IllegalArgumentException("t is not the defined domain for this solution");
 
-        l = Math.min(l, pointList.size()-1);
-	   	
-	   	return getInterpolator(l).getState(t, index);
-   }
+		int l = 1, r = pointList.size() - 1;
+		while (l <= r) {
+			int m = (l + r) / 2;
+			if (pointList.get(m).getTime() <= t)
+				l = m + 1;
+			else
+				r = m - 1;
+		}
+
+		l = Math.min(l, pointList.size() - 1);
+
+		return getInterpolator(l).getState(t, index);
+	}
    
-   /*
-    * ============================================================
-    * Different utils for a numerical solution
-    * ============================================================
-    */
+	/*
+	* ============================================================
+	* Different utils for a numerical solution
+	* ============================================================
+	*/
    
-   /*
-    * Returns max error given analytical solution and indexes to compare
-    */
-   public double getMaxError(StateFunction analyticalSolution, int[] indexList) {
-   	double err = pointList.stream()
-	    	.map(p -> {
-	    		double aux = 0.0;
-	    		double[] state = p.getState();
-	    		double t = p.getTime();
-	    		for(int i=0; i < indexList.length; ++i) {
-	    			double diff = (state[indexList[i]] - analyticalSolution.getState(t, indexList[i]));
-	    			aux += diff*diff;
-	    		}
-	    		return aux;
-	    	})
-	    	.max(Double::compare)
-	    	.get();
-   	return Math.sqrt(err);
-   }
+	/**
+	 * Returns the maximum error in the list of points comparing only
+	 * certain indexes
+	 * @param analyticalSolution real solution of the problem
+	 * @param indexList lists of indexes to compare
+	 * @return
+	 */
+	public double getMaxError(StateFunction analyticalSolution, int[] indexList) {
+		double err = pointList.stream()
+				.map(p -> {
+					double aux = 0.0;
+					double[] state = p.getState();
+					double t = p.getTime();
+					for (int i = 0; i < indexList.length; ++i) {
+						double diff = (state[indexList[i]] - analyticalSolution.getState(t, indexList[i]));
+						aux += diff * diff;
+					}
+					return aux;
+				})
+				.max(Double::compare)
+				.orElse(0.0);
+		return Math.sqrt(err);
+	}
    
-    /*
-     * Returns max error given analytical solution
+    /**
+     * Returns the maximum error in the list of points
+     * @param analyticalSolution
+     * @return
      */
     public double getMaxError(StateFunction analyticalSolution) {
-    	double err = pointList.stream()
-	    	.map(p -> {
-	    		double currentErr = 0.0;
-	    		double[] state = p.getState();
-	    		double t = p.getTime();
-	    		for(int i=0; i < state.length; ++i) {
-	    			double diff = (state[i] - analyticalSolution.getState(t, i));
-	    			currentErr += diff*diff;
-	    		}
-	    		return currentErr;
-	    	})
-	    	.max(Double::compare)
-	    	.get();
-    	return Math.sqrt(err);
+    	if(pointList.isEmpty()) return 0.;
+    	
+    	int dim = pointList.get(0).getState().length;
+    	int[] indexes = IntStream.range(0, dim).toArray();
+    	
+    	return getMaxError(analyticalSolution, indexes);
     }
     
+    /**
+     * @return list of steps used
+     */
     public ArrayList<Double> getStepList() {
     	ArrayList<Double> stepList = new ArrayList<>(pointList.size()-1);
     	for(int i=0; i+1 < pointList.size(); ++i)
