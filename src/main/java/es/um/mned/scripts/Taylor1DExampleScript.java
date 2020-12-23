@@ -1,5 +1,7 @@
 package es.um.mned.scripts;
 
+import java.util.Optional;
+
 import es.um.mned.interpolation.StateFunction;
 import es.um.mned.methods.FixedStepEulerMethod;
 import es.um.mned.methods.FixedStepMethod;
@@ -17,7 +19,7 @@ public class Taylor1DExampleScript {
 	static public class Taylor1DExample2ndOrderSolver extends FixedStepMethod {
 
         public Taylor1DExample2ndOrderSolver(InitialValueProblem problem, double step) {
-            super(problem, step);
+            super(problem, step, Optional.empty());
         }
         
         
@@ -37,7 +39,7 @@ public class Taylor1DExampleScript {
     static public class Taylor1DExample4thdOrderSolver extends FixedStepMethod {
 
         public Taylor1DExample4thdOrderSolver(InitialValueProblem problem, double step) {
-            super(problem, step);
+            super(problem, step, Optional.empty());
         }
         
         
@@ -77,8 +79,8 @@ public class Taylor1DExampleScript {
 
         FixedStepMethod taylor2Method = new Taylor1DExample2ndOrderSolver(problem,h);
         FixedStepMethod taylor4Method = new Taylor1DExample4thdOrderSolver(problem,h);
-        FixedStepMethod eulerMethod     = new FixedStepEulerMethod (problem,h);
-        FixedStepMethod eulerHalfMethod = new FixedStepEulerMethod (problem,h/2);
+        FixedStepMethod eulerMethod     = new FixedStepEulerMethod (problem,h, Optional.empty());
+        FixedStepMethod eulerHalfMethod = new FixedStepEulerMethod (problem,h/2, Optional.empty());
 
         eulerMethod.solve(maxTime);
         eulerHalfMethod.solve(maxTime);

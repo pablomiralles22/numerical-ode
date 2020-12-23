@@ -1,5 +1,7 @@
 package es.um.mned.methods;
 
+import java.util.Optional;
+
 import es.um.mned.interpolation.ExtendedStateFunction;
 import es.um.mned.ode.ConvergenceException;
 import es.um.mned.ode.Event;
@@ -92,10 +94,11 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
 	public FixedStepBDFNewton1DMethod(
             ExtendedInitialValueProblem problem,
             int order,
-            double step
+            double step,
+            Optional<Event> event
             ) {
 
-		super(problem, step);
+		super(problem, step, event);
 
         this.order = order;
         startSteps = order - 1;
@@ -134,24 +137,6 @@ public class FixedStepBDFNewton1DMethod extends FixedStepMethod {
 		 * I don't think it's a good idea to use RK methods, as it would lead to issues with rigid problems.
 		 */
         startEquation = new Trapezoidal1DMethodExtendedEquation(problem, step);
-	}
-	
-
-	/**
-	 * @param problem InitialValueProblem that implements partial derivative of y
-	 * @param order Order of the BDF method, between 1 and 6.
-	 * @param step Size of the steps to take
-	 * @param tolerance Tolerance for Newton method to solve the equation
-	 * @param event Event object
-	 */
-	public FixedStepBDFNewton1DMethod(
-            ExtendedInitialValueProblem problem,
-            int order,
-            double step,
-            Event event
-            ) {
-		this(problem, order, step);
-		super.setEvent(event);
 	}
 	
 	/*

@@ -1,16 +1,19 @@
 package es.um.mned.methods;
 
+import java.util.Optional;
+
 import es.um.mned.ode.ConvergenceException;
 import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 
 public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
-    static public final int sSTEPS = 4;
+    private static final double MAX_Q = 4.;
+	private static final double MIN_Q = 0.1;
 
-    private double mCurrentStep;
-    private double mMinimumStepAllowed; // Non-convergence minimum
+	public static final int sSTEPS = 4;
 
-    protected boolean mMustRestart=true;
+
+    protected boolean mMustRestart = true;
     protected double[] mPredictorState, mCorrectorState;
     protected double[] mAuxState; // Required by the RK starter
     protected double[]   mTimes       = new double[sSTEPS-1];   // Times taken at restart
@@ -26,11 +29,16 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
      * @param InitialValueProblem problem 
      * @param step the fixed step to take. If negative, we'd solve backwards in time
      */
-    public AdaptiveStepPredictorCorrector4Method(InitialValueProblem problem, double step, double tolerance) {
-        super(problem,step);
-        super.setTolerance(tolerance);
-        mCurrentStep = step;
-        mMinimumStepAllowed = Math.abs(step)/1.0e6;
+    public AdaptiveStepPredictorCorrector4Method(
+    		InitialValueProblem problem,
+    		double step,
+    		Optional<Double> tolerance,
+    		Optional<Double> minStep,
+    		Optional<Event> event
+    		) {
+        super(problem,step, tolerance, minStep, event);
+        
+        
         mPredictorState = problem.getInitialState();
         mCorrectorState = problem.getInitialState();
         for (int i=0; i<mStates.length; i++) mStates[i] = problem.getInitialState();
@@ -38,11 +46,6 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
         // ------
         dim = problem.getInitialState().length;
         queue = new double[sSTEPS-1][dim];
-    }
-    
-    public AdaptiveStepPredictorCorrector4Method(InitialValueProblem problem, double step, double tolerance, Event event) {
-        this(problem, step, tolerance);
-        super.setEvent(event);
     }
     
     
@@ -112,7 +115,7 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
                     } 
                     else {
                         double q = 1.5*Math.pow(maxErrorAllowed/norm, 0.25);
-                        q = Math.min(4, q); // Do not grow too much
+                        q = Math.min(MAX_Q, q); // Do not grow too much
                         //System.out.print ("ACCEPTED: t = "+time+ " Old step is "+mCurrentStep+ " error = "+error);
                         mCurrentStep *= q;
                         //System.out.println ("  New step is "+mCurrentStep+" state= "+state[0]);
@@ -128,7 +131,7 @@ public class AdaptiveStepPredictorCorrector4Method extends AdaptiveStepMethod {
             }
             // Try a new smaller step
             double q = 1.5*Math.pow(maxErrorAllowed/norm, 0.25);
-            q = Math.max(q, 0.1); // Do not shrink too much
+            q = Math.max(q, MIN_Q); // Do not shrink too much
             mCurrentStep *= q;
             //System.out.println ("REJECTED: t = "+time+ " New step is "+mCurrentStep+ " error = "+error);
             mMustRestart = true;

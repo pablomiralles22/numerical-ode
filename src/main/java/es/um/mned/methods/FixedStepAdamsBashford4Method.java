@@ -5,6 +5,8 @@
  */
 package es.um.mned.methods;
 
+import java.util.Optional;
+
 import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 
@@ -19,19 +21,12 @@ public class FixedStepAdamsBashford4Method extends FixedStepMethod {
     protected double[] auxState;
     protected double[] derivativeIm3,derivativeIm2,derivativeIm1, derivativeI;
     
-    /**
-     * Initializes the method for a given InitialValueProblem
-     * @param InitialValueProblem problem 
-     * @param step the fixed step to take. If negative, we'd solve backwards in time
-     */
-    public FixedStepAdamsBashford4Method(InitialValueProblem problem, double step) {
-        super(problem,step);
+    public FixedStepAdamsBashford4Method(
+    		InitialValueProblem problem,
+    		double step,
+    		Optional<Event> event) {
+        super(problem, step, event);
         auxState = problem.getInitialState();
-    }
-    
-    public FixedStepAdamsBashford4Method(InitialValueProblem problem, double step, Event event) {
-        this(problem, step);
-        super.setEvent(event);
     }
     
     @Override

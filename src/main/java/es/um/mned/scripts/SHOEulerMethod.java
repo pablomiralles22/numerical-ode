@@ -1,5 +1,6 @@
 package es.um.mned.scripts;
 
+import java.util.Optional;
 import java.util.Vector;
 
 import es.um.mned.interpolation.StateFunction;
@@ -89,7 +90,7 @@ public class SHOEulerMethod {
         
         // Euler method h
         XCross eulerCrossH = new XCross();
-        FixedStepMethod method = new FixedStepEulerMethod(shoProblem, hStep, eulerCrossH);
+        FixedStepMethod method = new FixedStepEulerMethod(shoProblem, hStep, Optional.of(eulerCrossH));
         method.solve(maxTime);
         System.out.println ("Max Error for h ("+hStep+") is "+ method.getSolution().getMaxError(sol));
         System.out.println("Frequency with h: " + eulerCrossH.getFrequency());
@@ -97,7 +98,7 @@ public class SHOEulerMethod {
         
         // Euler method h/2
         XCross eulerCrossH2 = new XCross();
-        FixedStepMethod method2 = new FixedStepEulerMethod(shoProblem,hStep/2, eulerCrossH2);
+        FixedStepMethod method2 = new FixedStepEulerMethod(shoProblem,hStep/2, Optional.of(eulerCrossH2));
         method2.solve(maxTime);
         System.out.println("Frequency with h/2: " + eulerCrossH2.getFrequency());
         

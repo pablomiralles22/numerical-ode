@@ -1,12 +1,13 @@
 package es.um.mned.methods;
 
+import java.util.Optional;
+
 import es.um.mned.ode.ConvergenceException;
 import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 
 public class AdaptiveStepEulerMethod extends AdaptiveStepMethod {
-    private double mCurrentStep;
-    private double mMinimumStepAllowed; // Non-convergence minimum
+	
     private double[] mHalfStepState;
     private double[] mFullStepState; 
     
@@ -15,20 +16,18 @@ public class AdaptiveStepEulerMethod extends AdaptiveStepMethod {
      * @param InitialValueProblem problem 
      * @param step the fixed step to take. If negative, we'd solve backwards in time
      */
-    public AdaptiveStepEulerMethod(InitialValueProblem problem, double step, double tolerance) {
-        super(problem,step);
-        super.setTolerance(tolerance);
-        mCurrentStep = step;
+    public AdaptiveStepEulerMethod(
+    		InitialValueProblem problem,
+    		double step,
+    		Optional<Double> tolerance,
+    		Optional<Double> minStep,
+    		Optional<Event> event
+    		) {
+        super(problem, step, tolerance, minStep, event);
+        
         mHalfStepState = problem.getInitialState();
         mFullStepState = problem.getInitialState();
-        mMinimumStepAllowed = Math.abs(step)/1.0e6;
     }
-    
-    public AdaptiveStepEulerMethod(InitialValueProblem problem, double step, double tolerance, Event event) {
-        this(problem, step, tolerance);
-        super.setEvent(event);
-    }
-    
     
     @Override
     public int getOrder() {

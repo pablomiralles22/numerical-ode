@@ -1,5 +1,7 @@
 package es.um.mned.scripts;
 
+import java.util.Optional;
+
 import es.um.mned.interpolation.StateFunction;
 import es.um.mned.methods.FixedStepEulerMethod;
 import es.um.mned.methods.FixedStepMethod;
@@ -82,7 +84,7 @@ public class ParabolicThrowTest {
         // Event
         Event yCross = new YCross(zeroTol);
         // Method
-        FixedStepMethod method = new FixedStepEulerMethod(problem, hStep, yCross);
+        FixedStepMethod method = new FixedStepEulerMethod(problem, hStep, Optional.of(yCross));
         // Analytical sol
         StateFunction sol = new TrueSol();
 

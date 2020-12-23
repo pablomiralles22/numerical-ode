@@ -6,6 +6,7 @@
 package es.um.mned.methods;
 
 import java.util.Iterator;
+import java.util.Optional;
 
 import es.um.mned.ode.ConvergenceException;
 import es.um.mned.ode.Event;
@@ -20,13 +21,8 @@ public class FixedStepEulerMethod extends FixedStepMethod {
      * @param InitialValueProblem problem 
      * @param step the fixed step to take. If negative, we'd solve backwards in time
      */
-    public FixedStepEulerMethod(InitialValueProblem problem, double step) {
-        super(problem,step);
-    }
-    
-    public FixedStepEulerMethod(InitialValueProblem problem, double step, Event event) {
-        this(problem,step);
-        super.setEvent(event);
+    public FixedStepEulerMethod(InitialValueProblem problem, double step, Optional<Event> event) {
+        super(problem,step, event);
     }
     
     @Override
@@ -83,12 +79,12 @@ public class FixedStepEulerMethod extends FixedStepMethod {
             double initialStep, double minStepAllowed) throws ConvergenceException {
         
         double h = initialStep;
-        FixedStepEulerMethod methodFull = new FixedStepEulerMethod(problem,h);
+        FixedStepEulerMethod methodFull = new FixedStepEulerMethod(problem,h, Optional.empty());
         methodFull.solve(maxTime);
         NumericalSolution solutionFull = methodFull.getSolution();
         while (Math.abs(h)>Math.abs(minStepAllowed)) {
             System.out.println ("Trying for h = "+h+"...");
-            FixedStepEulerMethod methodHalf = new FixedStepEulerMethod(problem,h/2);
+            FixedStepEulerMethod methodHalf = new FixedStepEulerMethod(problem,h/2, Optional.empty());
             methodHalf.solve(maxTime);
             NumericalSolution solutionHalf = methodHalf.getSolution();
             double maxError = maxHalfStepError(solutionFull,solutionHalf);

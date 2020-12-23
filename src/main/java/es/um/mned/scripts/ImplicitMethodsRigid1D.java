@@ -1,5 +1,7 @@
 package es.um.mned.scripts;
 
+import java.util.Optional;
+
 import es.um.mned.methods.*;
 import es.um.mned.ode.*;
 import es.um.mned.problems.Rigid1D;
@@ -19,11 +21,11 @@ public class ImplicitMethodsRigid1D {
         ExtendedInitialValueProblem problem = new Rigid1D(t0, x0);
         
         // Methods
-//        FixedStepBackwardsEulerNewton1DMethod method = new FixedStepBackwardsEulerNewton1DMethod(problem,hStep);
-//        FixedStepTrapezoidalNewton1DMethod method = new FixedStepTrapezoidalNewton1DMethod(problem, hStep);
-        FixedStepBDFNewton1DMethod method = new FixedStepBDFNewton1DMethod(problem, 3, hStep);
-//        FixedStepMethod method = new FixedStepPredictorCorrector4Method(problem,10);
-//        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance);
+//        FixedStepBackwardsEulerNewton1DMethod method = new FixedStepBackwardsEulerNewton1DMethod(problem, hStep, Optional.empty());
+//        FixedStepTrapezoidalNewton1DMethod method = new FixedStepTrapezoidalNewton1DMethod(problem, hStep, Optional.empty());
+        FixedStepBDFNewton1DMethod method = new FixedStepBDFNewton1DMethod(problem, 3, hStep, Optional.empty());
+//        FixedStepMethod method = new FixedStepPredictorCorrector4Method(problem, hStep, Optional.empty());
+//        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem, hStep, Optional.of(tolerance), Optional.empty(), Optional.empty());
         
         method.setNewtonTolerance(tolerance);
         

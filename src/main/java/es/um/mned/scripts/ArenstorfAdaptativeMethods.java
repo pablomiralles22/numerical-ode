@@ -1,5 +1,7 @@
 package es.um.mned.scripts;
 
+import java.util.Optional;
+
 import es.um.mned.methods.*;
 import es.um.mned.ode.*;
 import es.um.mned.problems.ArenstorfOrbits;
@@ -49,11 +51,11 @@ public class ArenstorfAdaptativeMethods {
         Event yCross = new YCross(tolerance);
         
         // Method
-//        FixedStepMethod method = new FixedStepPredictorCorrector4Method(problem,hStep, yCross);
-//        FixedStepMethod method = new AdaptiveStepPredictorCorrector4Method(problem,hStep, tolerance, yCross);
-//        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem,hStep, tolerance, yCross);
-        FixedStepMethod method = new AdaptiveStepRK4Method(problem,hStep, tolerance, yCross);
-//        FixedStepMethod method = new FixedStepModifiedEulerMethod(problem,hStep, yCross);
+//        FixedStepMethod method = new FixedStepPredictorCorrector4Method(problem, 1e-6, Optional.of(yCross));
+        FixedStepMethod method = new AdaptiveStepPredictorCorrector4Method(problem,hStep, Optional.of(tolerance), Optional.empty(), Optional.of(yCross));
+//        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem,hStep, Optional.of(tolerance), Optional.empty(), Optional.of(yCross));
+//        FixedStepMethod method = new AdaptiveStepRK4Method(problem,hStep, Optional.of(tolerance), Optional.empty(), Optional.of(yCross));
+//        FixedStepMethod method = new FixedStepModifiedEulerMethod(problem, 1e-6, Optional.of(yCross));
         
         
         method.solve(maxT);

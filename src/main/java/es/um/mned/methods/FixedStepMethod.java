@@ -1,6 +1,8 @@
 package es.um.mned.methods;
 
 import java.util.Iterator;
+import java.util.Optional;
+
 import es.um.mned.ode.InitialValueProblem;
 import es.um.mned.ode.NumericalSolution;
 import es.um.mned.ode.NumericalSolutionPoint;
@@ -47,16 +49,17 @@ abstract public class FixedStepMethod {
      * @param InitialValueProblem problem 
      * @param step the fixed step to take. If negative, we'd solve backwards in time
      */
-    protected FixedStepMethod(InitialValueProblem problem, double step) {
-        mProblem = problem;
+
+    protected FixedStepMethod(
+    		InitialValueProblem problem,
+    		double step,
+    		Optional<Event> event
+    		) {
+    	mProblem = problem;
         mStep = step;
         currentUserTime = problem.getInitialTime();
         mSolution = new NumericalSolution(problem, getOrder());
-    }
-
-    protected FixedStepMethod(InitialValueProblem problem, double step, Event event) {
-        this(problem, step);
-        this.event = event;
+        this.event = event.orElse(null);
     }
     
     abstract public int getOrder();

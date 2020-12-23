@@ -1,5 +1,7 @@
 package es.um.mned.methods;
 
+import java.util.Optional;
+
 import es.um.mned.interpolation.ExtendedStateFunction;
 import es.um.mned.ode.ConvergenceException;
 import es.um.mned.ode.Event;
@@ -65,14 +67,9 @@ public class FixedStepBackwardsEulerNewton1DMethod extends FixedStepMethod {
 	 * ========================================
 	 */
 
-	public FixedStepBackwardsEulerNewton1DMethod(ExtendedInitialValueProblem problem, double step) {
-		super(problem, step);
+	public FixedStepBackwardsEulerNewton1DMethod(ExtendedInitialValueProblem problem, double step, Optional<Event> event) {
+		super(problem, step, event);
 		equation = new BackwardsEuler1DMethodExtendedEquation(problem, step);
-	}
-	
-	public FixedStepBackwardsEulerNewton1DMethod(ExtendedInitialValueProblem problem, double step, Event event) {
-		this(problem, step);
-		super.setEvent(event);
 	}
 	
 	/*

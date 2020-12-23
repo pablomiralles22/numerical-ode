@@ -1,5 +1,7 @@
 package es.um.mned.methods;
 
+import java.util.Optional;
+
 import es.um.mned.ode.Event;
 import es.um.mned.ode.InitialValueProblem;
 
@@ -17,16 +19,10 @@ public class FixedStepPredictorCorrector4Method extends FixedStepAdamsBashford4M
      * @param InitialValueProblem problem 
      * @param step the fixed step to take. If negative, we'd solve backwards in time
      */
-    public FixedStepPredictorCorrector4Method(InitialValueProblem problem, double step) {
-        super(problem,step);
+    public FixedStepPredictorCorrector4Method(InitialValueProblem problem, double step, Optional<Event> event) {
+        super(problem, step, event);
         predictorState = problem.getInitialState();
     }
-    
-    public FixedStepPredictorCorrector4Method(InitialValueProblem problem, double step, Event event) {
-        this(problem,step);
-        super.setEvent(event);
-    }
-
     
     public double doStep(double deltaTime, double time, double[] state) {
         switch(lastStep) {
