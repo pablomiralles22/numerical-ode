@@ -52,8 +52,8 @@ public class ArenstorfAdaptativeMethods {
         
         // Method
 //        FixedStepMethod method = new FixedStepPredictorCorrector4Method(problem, 1e-6, Optional.of(yCross));
-        FixedStepMethod method = new AdaptiveStepPredictorCorrector4Method(problem,hStep, Optional.of(tolerance), Optional.empty(), Optional.of(yCross));
-//        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem,hStep, Optional.of(tolerance), Optional.empty(), Optional.of(yCross));
+//        FixedStepMethod method = new AdaptiveStepPredictorCorrector4Method(problem,hStep, Optional.of(tolerance), Optional.empty(), Optional.of(yCross));
+        FixedStepMethod method = new AdaptiveStepRKFehlbergMethod(problem,hStep, Optional.of(tolerance), Optional.empty(), Optional.of(yCross));
 //        FixedStepMethod method = new AdaptiveStepRK4Method(problem,hStep, Optional.of(tolerance), Optional.empty(), Optional.of(yCross));
 //        FixedStepMethod method = new FixedStepModifiedEulerMethod(problem, 1e-6, Optional.of(yCross));
         

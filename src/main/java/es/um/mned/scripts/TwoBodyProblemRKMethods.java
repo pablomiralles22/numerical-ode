@@ -43,7 +43,7 @@ public class TwoBodyProblemRKMethods {
 		
 		@Override
 		public boolean stopCondition() {
-			return loopCount >= 20;
+			return loopCount >= 21;
 		}
     	
     }
@@ -52,7 +52,7 @@ public class TwoBodyProblemRKMethods {
     	// Parameters
         double hStep = -10;
         double tolerance = 1.0e-8;
-        int maxYears = 10;
+        int maxYears = 15;
         double tMax = -maxYears * 365 * 24;
         System.out.println(tMax / hStep);
         

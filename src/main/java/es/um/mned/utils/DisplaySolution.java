@@ -18,7 +18,7 @@ import org.opensourcephysics.display.Dataset;
 
 
 public class DisplaySolution {
-	private static final int MAX_POINTS = 10000;
+	private static final int MAX_POINTS = 10000; // Estimated empirically, might change
 
 	
 	/*
