@@ -47,7 +47,7 @@ out/
 ##############################
 ## Eclipse
 ##############################
-.settngs/
+.settings/
 bin/
 tmp/
 .metadata
@@ -81,4 +81,4 @@ nb-configuration.xml
 ##############################
 ## OS X
 ##############################
-.DS_Storei
+.DS_Store
